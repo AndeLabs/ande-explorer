@@ -1,0 +1,61 @@
+# ============================================================================
+# ANDE NETWORK EXPLORER - Cloudflare Tunnel Configuration
+# ============================================================================
+# This file shows how to configure Cloudflare Tunnel for BlockScout explorers
+# Integration with existing tunnel setup
+# 
+# Location on server: ~/.cloudflared/config.yml or /etc/cloudflared/config.yml
+# ============================================================================
+
+# Tunnel details
+tunnel: ande-blockchain
+credentials-file: /home/cloudflared/.cloudflared/5fced6cf-92eb-4167-abd3-d0b9397613cc.json
+
+# Ingress rules for explorers (ADD to existing config)
+# These route Cloudflare traffic to local services
+ingress:
+  
+  # ========================================================================
+  # MAIN EXPLORER
+  # ========================================================================
+  - hostname: explorer.ande.network
+    service: http://localhost:80
+    originRequest:
+      http2Origin: true
+      connectTimeout: 30s
+      tlsTimeout: 30s
+  
+  # ========================================================================
+  # ADVANCED EXPLORER
+  # ========================================================================
+  - hostname: explorer-advanced.ande.network
+    service: http://localhost:80
+    originRequest:
+      http2Origin: true
+      connectTimeout: 30s
+      tlsTimeout: 30s
+  
+  # ========================================================================
+  # EXISTING SERVICES (Reference - keep as-is)
+  # ========================================================================
+  # - hostname: rpc.ande.network
+  #   service: http://localhost:8545
+  
+  # - hostname: ws.ande.network
+  #   service: http://localhost:8546
+  
+  # - hostname: api.ande.network
+  #   service: http://localhost:7331
+  
+  # - hostname: grafana.ande.network
+  #   service: http://localhost:3000
+  
+  # - hostname: faucet.ande.network
+  #   service: http://localhost:8080
+
+  # Catch-all
+  - service: http_status:404
+
+# Logging
+log-level: info
+log-file: /var/log/cloudflared/tunnel.log

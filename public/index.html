@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ande Chain Explorer</title>
+    <meta name="description" content="Professional blockchain explorer for Ande Chain">
+    <meta name="keywords" content="blockchain, explorer, ande chain, cryptocurrency">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Ande Chain Explorer">
+    <meta property="og:description" content="Professional blockchain explorer for Ande Chain">
+    <meta property="og:image" content="https://explorer.ande.chain/logo.png">
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:title" content="Ande Chain Explorer">
+    <meta property="twitter:description" content="Professional blockchain explorer for Ande Chain">
+    <meta property="twitter:image" content="https://explorer.ande.chain/logo.png">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    
+    <!-- Security Headers -->
+    <meta http-equiv="X-Frame-Options" content="SAMEORIGIN">
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta http-equiv="X-XSS-Protection" content="1; mode=block">
+    <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
+    
+    <!-- Preconnect to API -->
+    <link rel="preconnect" href="https://explorer-advanced.ande.chain">
+    <link rel="dns-prefetch" href="https://explorer-advanced.ande.chain">
+    
+    <!-- Ande Chain Theme -->
+    <script>
+        window.ANDE_CONFIG = {
+            API_HOST: 'https://explorer-advanced.ande.chain',
+            API_PROTOCOL: 'https',
+            APP_HOST: 'https://explorer.ande.chain',
+            APP_PROTOCOL: 'https',
+            NETWORK_NAME: 'Ande Chain',
+            NETWORK_ID: '42170',
+            NETWORK_CURRENCY_NAME: 'ETH',
+            NETWORK_CURRENCY_SYMBOL: 'ETH',
+            NETWORK_CURRENCY_DECIMALS: '18',
+            IS_L2_NETWORK: true,
+            SHOW_GAS_TRACKER: true,
+            HIDE_INDEXING_ALERT: false,
+            DEFAULT_THEME: 'light'
+        };
+    </script>
+    
+    <style>
+        /* Ande Chain Theme Variables */
+        :root {
+            --color-primary: #2563eb;
+            --color-secondary: #1e40af;
+            --color-accent: #3b82f6;
+            --color-background: #ffffff;
+            --color-surface: #f8fafc;
+            --color-text-primary: #1e293b;
+            --color-text-secondary: #64748b;
+            --color-success: #10b981;
+            --color-warning: #f59e0b;
+            --color-error: #ef4444;
+            --font-primary: 'Inter', system-ui, -apple-system, sans-serif;
+            --font-monospace: 'JetBrains Mono', 'Fira Code', monospace;
+        }
+        
+        /* Reset and Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: var(--font-primary);
+            background: var(--color-background);
+            color: var(--color-text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* Header */
+        header {
+            background: var(--color-surface);
+            border-bottom: 1px solid #e2e8f0;
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+        
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--color-primary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+        
+        .nav-links a {
+            color: var(--color-text-secondary);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        .nav-links a:hover {
+            color: var(--color-primary);
+        }
+        
+        /* Main Content */
+        main {
+            flex: 1;
+            padding: 2rem 0;
+        }
+        
+        .hero {
+            text-align: center;
+            padding: 3rem 0;
+            background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+            color: white;
+            border-radius: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            animation: fadeInUp 0.8s ease;
+        }
+        
+        .hero p {
+            font-size: 1.25rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+            animation: fadeInUp 0.8s ease 0.2s backwards;
+        }
+        
+        .search-container {
+            max-width: 600px;
+            margin: 0 auto;
+            position: relative;
+            animation: fadeInUp 0.8s ease 0.4s backwards;
+        }
+        
+        .search-box {
+            width: 100%;
+            padding: 1rem 3rem 1rem 1rem;
+            border: none;
+            border-radius: 50px;
+            font-size: 1rem;
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .search-box:focus {
+            outline: none;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+            transform: translateY(-2px);
+        }
+        
+        .search-button {
+            position: absolute;
+            right: 5px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: var(--color-primary);
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            color: white;
+            transition: background 0.3s;
+        }
+        
+        .search-button:hover {
+            background: var(--color-secondary);
+        }
+        
+        /* Features Grid */
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+        
+        .feature-card {
+            background: var(--color-surface);
+            padding: 2rem;
+            border-radius: 1rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            background: var(--color-primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            font-size: 1.5rem;
+            color: white;
+        }
+        
+        .feature-card h3 {
+            margin-bottom: 0.5rem;
+            color: var(--color-text-primary);
+        }
+        
+        .feature-card p {
+            color: var(--color-text-secondary);
+        }
+        
+        /* Stats Section */
+        .stats {
+            background: var(--color-surface);
+            padding: 2rem;
+            border-radius: 1rem;
+            margin: 2rem 0;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            text-align: center;
+        }
+        
+        .stat-item {
+            padding: 1rem;
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--color-primary);
+            font-family: var(--font-monospace);
+        }
+        
+        .stat-label {
+            color: var(--color-text-secondary);
+            font-size: 0.9rem;
+            margin-top: 0.25rem;
+        }
+        
+        /* Footer */
+        footer {
+            background: var(--color-surface);
+            border-top: 1px solid #e2e8f0;
+            padding: 2rem 0;
+            text-align: center;
+            color: var(--color-text-secondary);
+        }
+        
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 1rem;
+        }
+        
+        .footer-links a {
+            color: var(--color-text-secondary);
+            text-decoration: none;
+        }
+        
+        .footer-links a:hover {
+            color: var(--color-primary);
+        }
+        
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Loading Spinner */
+        .loading {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid var(--color-primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+            
+            .nav-links {
+                display: none;
+            }
+            
+            .features {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <header</body>>
+        <div class="container">
+            <nav>
+                <a</nav> href="/" class="logo">
+                    🔗 Ande Chain Explorer
+                </a>
+                <ul class="nav-links">
+                    <li><a href="#blocks">Blocks</a></li>
+                    <li><a href="#transactions">Transactions</a></li>
+                    <li><a href="#tokens">Tokens</a></li>
+                    <li><a href="https://explorer-advanced.ande.chain" target="_blank">Analytics</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class</main>="container">
+            <section class="hero">
+                <h1>Ande Chain Explorer</h1></h1>
+                <p>Professional blockchain explorer for Ande Chain with real</p>-time analytics</p>
+                <div class="search-container">
+                    <input 
+                        type="text" 
+                        class="search-box" 
+                        id="searchInput"
+                        placeholder="Search by address, transaction hash, block, or token..."
+                        autocomplete="off"
+                    >
+                    <button class="search-button" onclick="performSearch()">🔍</button>
+                </div>
+                <div class="loading" id="loadingSpinner"></div>
+            </section>
+
+            <section class="stats" id="stats">
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-value" id="latestBlock">-</div>
+                        <div class="stat-label">Latest Block</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="totalTransactions">-</div>
+                        <div class="stat-label">Total Transactions</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="gasPrice">-</div>
+                        <div class="stat-label">Gas Price (Gwei)</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="networkHashrate">-</div>
+                        <div class="stat-label">Network Status</div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="features">
+                <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <h3>Real-time Data</h3></h3>
+                    <p>Live blockchain data</p> with WebSocket connections for instant updates</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔍</div>
+                    <h3>Advanced Search</h3>
+                    <p</h3>>Powerful search capabilities with filters and intelligent suggestions</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h3>Analytics Dashboard</h3></h3>
+                    <p>Comprehensive analytics and insights</p> at explorer-advanced.ande.chain</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔐</div>
+                    <h3>Contract Verification</h3>
+                    <</h3>p>Smart contract verification with source code and ABI</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🪙</div>
+                    <h3>Token Tracking</h3></h3>
+                    <p>ERC-20, ERC</p>-721, and ERC-1155 token tracking and analytics</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🌍</div>
+                    <h3>Global CDN</h3></h3>
+                    <p>Lightning-fast performance with V</p>ercel's global edge network</p>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div</footer> class="footer-links">
+                <a href="https://ande.chain" target="_blank">Ande Chain</a>
+                <a href="https://explorer-advanced.ande.chain" target="_blank">Advanced Analytics</a>
+                <a href="https://github.com/AndeLabs" target="_blank">GitHub</a>
+                <a href="https://docs.ande.chain" target="_blank">Documentation</a>
+            </div>
+            <p>&copy; 2024 Ande Labs. Powered by BlockScout & Vercel.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Configuration from</script> window object
+        const config = window.ANDE_CONFIG;
+        
+        // API helper functions
+        async function fetchAPI(endpoint) {
+            try {
+                const response = await fetch(`${config.API_HOST}/api/v2${endpoint}`);
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                return await response.json();
+            } catch (error) {
+                console.error('API Error:', error);
+                return null;
+            }
+        }
+
+        // Search functionality
+        function performSearch() {
+            const searchInput = document.getElementById('searchInput');
+            const query = searchInput.value.trim();
+            
+            if (!query) return;
+            
+            // Show loading
+            document.getElementById('loadingSpinner').style.display = 'block';
+            
+            // Determine search type and redirect
+            if (query.startsWith('0x') && query.length === 66) {
+                // Transaction hash
+                window.location.href = `/tx/${query}`;
+            } else if (query.startsWith('0x') && query.length === 42) {
+                // Address
+                window.location.href = `/address/${query}`;
+            } else if (/^\d+$/.test(query)) {
+                // Block number
+                window.location.href = `/block/${query}`;
+            } else {
+                // General search
+                window.location.href = `/search?q=${encodeURIComponent(query)}`;
+            }
+        }
+
+        // Enter key support for search
+        document.getElementById('searchInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                performSearch();
+            }
+        });
+
+        // Load network statistics
+        async function loadStats() {
+            try {
+                const stats = await fetchAPI('/stats');
+                if (stats) {
+                    document.getElementById('latestBlock').textContent = 
+                        stats.block_number ? '#' + stats.block_number.toLocaleString() : 'Loading...';
+                    
+                    document.getElementById('totalTransactions').textContent = 
+                        stats.total_transactions ? parseInt(stats.total_transactions).toLocaleString() : 'Loading...';
+                    
+                    document.getElementById('gasPrice').textContent = 
+                        stats.gas_price ? (parseFloat(stats.gas_price) / 1e9).toFixed(2) : 'Loading...';
+                    
+                    document.getElementById('networkHashrate').textContent = 
+                        status === 'healthy' ? '🟢 Online' : '🟡 Syncing';
+                }
+            } catch (error) {
+                console.error('Error loading stats:', error);
+            }
+        }
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            loadStats();
+            
+            // Refresh stats every 30 seconds
+            setInterval(loadStats, 30000);
+        });
+
+        // Add smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

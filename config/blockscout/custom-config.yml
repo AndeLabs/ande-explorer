@@ -1,0 +1,258 @@
+# Ande Explorer - BlockScout Custom Configuration
+# Standard settings for optimal performance and features
+
+# Indexing Configuration
+indexing:
+  # Block processing settings
+  block_fetcher:
+    batch_size: 50
+    batch_timeout: 5000
+    max_retries: 3
+    retry_delay: 1000
+  
+  # Internal transactions
+  internal_transactions:
+    enabled: true
+    max_depth: 10
+    timeout: 30000
+  
+  # Token transfers
+  token_transfers:
+    enabled: true
+    batch_size: 100
+    
+  # Contract verification
+  contract_verification:
+    enabled: true
+    etherscan_compatible: true
+    verification_timeout: 60000
+    
+# API Configuration
+api:
+  # Rate limiting
+  rate_limiting:
+    enabled: true
+    requests_per_minute: 60
+    requests_per_hour: 1000
+    burst_limit: 20
+    
+  # Caching
+  cache:
+    enabled: true
+    ttl: 300
+    max_size: 1000
+    
+  # Response formatting
+  response:
+    pretty_print: false
+    include_metadata: true
+    pagination_size: 50
+    
+# UI Configuration
+ui:
+  # Navigation
+  navigation:
+    show_search_bar: true
+    show_language_selector: true
+    show_theme_toggle: true
+    
+  # Charts and visualizations
+  charts:
+    enabled: true
+    default_period: "30d"
+    max_period: "2y"
+    refresh_interval: 60000
+    
+  # Features
+  features:
+    gas_tracker: true
+    price_chart: false
+    market_cap_chart: false
+    token_icons: true
+    validator_info: false
+    address_tags: true
+    
+  # Analytics (advanced instance)
+  analytics:
+    enhanced_metrics: true
+    export_data: true
+    custom_queries: true
+    real_time_updates: true
+    
+# Database Configuration
+database:
+  # Connection pool
+  pool_size: 20
+  pool_timeout: 5000
+  
+  # Query optimization
+  query_timeout: 30000
+  slow_query_threshold: 5000
+  
+  # Pruning
+  pruning:
+    enabled: true
+    retention_period: "90d"
+    batch_size: 1000
+    
+# Cache Configuration
+cache:
+  # Redis settings
+  redis:
+    ttl: 600
+    max_connections: 10
+    
+  # Cache keys
+  keys:
+    blocks: "blocks:*"
+    transactions: "txs:*"
+    addresses: "addr:*"
+    tokens: "tokens:*"
+    
+# Security Configuration
+security:
+  # CORS
+  cors:
+    enabled: true
+    allowed_origins: ["https://explorer.ande.network", "https://explorer-advanced.ande.network"]
+    allowed_methods: ["GET", "POST", "OPTIONS"]
+    allowed_headers: ["Content-Type", "Authorization"]
+    
+  # Headers
+  headers:
+    x_frame_options: "DENY"
+    x_content_type_options: "nosniff"
+    x_xss_protection: "1; mode=block"
+    
+# Monitoring Configuration
+monitoring:
+  # Health checks
+  health:
+    enabled: true
+    endpoint: "/health"
+    check_interval: 30000
+    
+  # Metrics
+  metrics:
+    enabled: true
+    endpoint: "/metrics"
+    include_database_stats: true
+    include_cache_stats: true
+    
+  # Logging
+  logging:
+    level: "info"
+    format: "json"
+    max_file_size: "100MB"
+    max_files: 10
+    
+# Network Configuration
+network:
+  # RPC settings
+  rpc:
+    timeout: 30000
+    max_retries: 3
+    retry_delay: 1000
+    batch_requests: true
+    
+  # WebSocket
+  websocket:
+    enabled: true
+    heartbeat_interval: 30000
+    max_connections: 1000
+    
+# Smart Contract Configuration
+smart_contracts:
+  # Verification
+  verification:
+    enabled: true
+    etherscan_compatible: true
+    max_source_size: "10MB"
+    timeout: 60000
+    
+  # ABI decoding
+  abi_decoding:
+    enabled: true
+    max_depth: 10
+    timeout: 10000
+    
+  # Contract libraries
+  libraries:
+    enabled: true
+    auto_verify: false
+    
+# Token Configuration
+tokens:
+  # ERC-20
+  erc20:
+    enabled: true
+    auto_discovery: true
+    batch_size: 100
+    
+  # ERC-721 (NFTs)
+  erc721:
+    enabled: true
+    metadata_fetch: true
+    image_proxy: true
+    
+  # ERC-1155
+  erc1155:
+    enabled: true
+    metadata_fetch: true
+    image_proxy: true
+    
+# Export Configuration
+export:
+  # CSV export
+  csv:
+    enabled: true
+    max_rows: 10000
+    timeout: 30000
+    
+  # API export
+  api:
+    enabled: true
+    rate_limit: 10
+    timeout: 60000
+    
+# Advanced Features (Advanced Instance)
+advanced:
+  # Real-time data
+  realtime:
+    enabled: true
+    websocket_updates: true
+    sse_updates: true
+    
+  # Analytics
+  analytics:
+    enabled: true
+    custom_metrics: true
+    data_export: true
+    query_builder: true
+    
+  # Developer tools
+  developer:
+    enabled: true
+    api_tester: true
+    contract_debugger: true
+    transaction_simulator: true
+    
+# Performance Optimization
+performance:
+  # Background jobs
+  background_jobs:
+    enabled: true
+    max_workers: 5
+    queue_size: 1000
+    
+  # Preloading
+  preload:
+    enabled: true
+    recent_blocks: 100
+    popular_addresses: 50
+    
+  # Compression
+  compression:
+    enabled: true
+    level: 6
+    min_size: 1024

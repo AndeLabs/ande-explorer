@@ -1,0 +1,128 @@
+{
+  "domain": "ande.chain",
+  "records": [
+    {
+      "type": "A",
+      "name": "explorer",
+      "value": "76.76.21.21",
+      "ttl": 300,
+      "comment": "Main explorer - Vercel's load balancer"
+    },
+    {
+      "type": "A", 
+      "name": "explorer-advanced",
+      "value": "76.76.21.21",
+      "ttl": 300,
+      "comment": "Advanced explorer - Vercel's load balancer"
+    },
+    {
+      "type": "CNAME",
+      "name": "explorer",
+      "value": "cname.vercel-dns.com",
+      "ttl": 60,
+      "comment": "Vercel CNAME for main explorer"
+    },
+    {
+      "type": "CNAME",
+      "name": "explorer-advanced", 
+      "value": "cname.vercel-dns.com",
+      "ttl": 60,
+      "comment": "Vercel CNAME for advanced explorer"
+    },
+    {
+      "type": "TXT",
+      "name": "_vercel",
+      "value": "v=spf1 include:_spf.vercel-mx.com ~all",
+      "ttl": 300,
+      "comment": "Vercel SPF record"
+    },
+    {
+      "type": "MX",
+      "name": "@",
+      "value": "mx1.vercel-mx.com",
+      "priority": 10,
+      "ttl": 300,
+      "comment": "Vercel MX record"
+    }
+  ],
+  "vercel_config": {
+    "project_name": "ande-explorer",
+    "framework": "other",
+    "build_command": "echo 'No build required - static frontend'",
+    "output_directory": "public",
+    "install_command": "echo 'No dependencies'",
+    "dev_command": "echo 'Development managed by Docker'",
+    "functions": {
+      "directory": "api"
+    },
+    "redirects": [
+      {
+        "source": "/api/:path*",
+        "destination": "https://explorer-advanced.ande.chain/api/:path*",
+        "permanent": false
+      }
+    ],
+    "rewrites": [
+      {
+        "source": "/",
+        "destination": "/index.html"
+      }
+    ],
+    "headers": [
+      {
+        "source": "/api/:path*",
+        "headers": [
+          {
+            "key": "Access-Control-Allow-Origin",
+            "value": "*"
+          },
+          {
+            "key": "Access-Control-Allow-Methods", 
+            "value": "GET, POST, PUT, DELETE, OPTIONS"
+          },
+          {
+            "key": "Access-Control-Allow-Headers",
+            "value": "Content-Type, Authorization"
+          }
+        ]
+      },
+      {
+        "source": "/(.*)",
+        "headers": [
+          {
+            "key": "X-Frame-Options",
+            "value": "SAMEORIGIN"
+          },
+          {
+            "key": "X-Content-Type-Options", 
+            "value": "nosniff"
+          },
+          {
+            "key": "X-XSS-Protection",
+            "value": "1; mode=block"
+          },
+          {
+            "key": "Referrer-Policy",
+            "value": "strict-origin-when-cross-origin"
+          }
+        ]
+      }
+    ]
+  },
+  "ssl_certificates": {
+    "provider": "vercel",
+    "automatic_renewal": true,
+    "certificate_type": "wildcard"
+  },
+  "cname_configuration": {
+    "main_explorer": {
+      "subdomain": "explorer",
+      "target": "cname.vercel-dns.com"
+    },
+    "advanced_explorer": {
+      "subdomain": "explorer-advanced", 
+      "target": "cname.vercel-dns.com"
+    }
+  },
+  "deployment_note": "Configure these records in your DNS provider. Vercel will handle SSL certificates automatically once DNS propagates."
+}

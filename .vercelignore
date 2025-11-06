@@ -1,0 +1,74 @@
+# Vercel Ignore - Excluir backend del despliegue
+# Solo el frontend se despliega en Vercel
+
+# Backend Docker Services (se ejecutan en servidores dedicados)
+docker/
+infra/
+config/blockscout/
+config/branding/
+
+# Scripts de servidor
+scripts/
+*.sh
+
+# Database y logs
+data/
+logs/
+backups/
+
+# Documentación (mantener solo README.md)
+docs/
+*.md
+!README.md
+
+# Archivos de configuración de servidor
+.env.*
+docker-compose*.yml
+Dockerfile*
+
+# Archivos temporales
+*.log
+*.tmp
+.cache/
+node_modules/
+
+# Certificados SSL (manejados por Vercel)
+*.crt
+*.key
+*.pem
+ssl/
+
+# Testing y development
+test/
+__tests__/
+*.test.js
+*.spec.js
+
+# Archivos del sistema
+.git/
+.gitignore
+.DS_Store
+Thumbs.db
+
+# Archivos de CI/CD
+.github/
+.gitlab-ci.yml
+.travis.yml
+Jenkinsfile
+
+# Archivos de configuración no necesarios para frontend
+.editorconfig
+.eslintrc*
+.prettierrc*
+babel.config.*
+jest.config.*
+
+# Solo permitir archivos del frontend
+public/
+src/
+package.json
+package-lock.json
+vercel.json
+tsconfig.json
+next.config.js
+tailwind.config.js
