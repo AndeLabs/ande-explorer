@@ -72,6 +72,22 @@ const nextConfig = {
   // Performance optimizations
   experimental: {
     optimizeCss: true,
+    // Enable Server Actions for better performance
+    serverActions: true,
+  },
+
+  // Production optimizations for Vercel
+  compress: true,
+  poweredByHeader: false,
+
+  // Output configuration for optimal Vercel deployment
+  output: 'standalone',
+
+  // Optimize bundle size
+  modularizeImports: {
+    'lucide-react': {
+      transform: 'lucide-react/dist/esm/icons/{{member}}',
+    },
   },
 };
 
