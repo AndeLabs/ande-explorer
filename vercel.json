@@ -1,16 +1,6 @@
 {
   "version": 2,
   "name": "ande-explorer-frontend",
-  "builds": [
-    {
-      "src": "api/**/*.js",
-      "use": "@vercel/node"
-    },
-    {
-      "src": "public/**/*",
-      "use": "@vercel/static"
-    }
-  ],
   "routes": [
     {
       "src": "/api/(.*)",
@@ -118,11 +108,6 @@
     "NEXT_PUBLIC_HIDE_INDEXING_ALERT": "false",
     "NEXT_PUBLIC_DEFAULT_THEME": "light",
     "BACKEND_URL": "https://explorer.ande.network"
-  },
-  "functions": {
-    "api/**/*": {
-      "maxDuration": 30
-    }
   },
   "regions": ["iad1"],
   "framework": null,
