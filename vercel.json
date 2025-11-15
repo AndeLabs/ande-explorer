@@ -2,7 +2,6 @@
   "version": 2,
   "name": "ande-explorer-frontend",
   "framework": "nextjs",
-  "root": "frontend",
   "buildCommand": "npm run build",
   "outputDirectory": ".next",
   "installCommand": "npm install",
