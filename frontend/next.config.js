@@ -71,7 +71,7 @@ const nextConfig = {
 
   // Performance optimizations
   experimental: {
-    optimizeCss: true,
+    // optimizeCss: true, // Disabled - causes critters module error
   },
 
   // Ignore TypeScript and ESLint errors during build
