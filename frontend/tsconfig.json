@@ -20,9 +20,13 @@
       }
     ],
     "paths": {
+      "@/lib/config": ["lib/config"],
+      "@/lib/api": ["lib/api"],
+      "@/lib/hooks": ["lib/hooks"],
+      "@/lib/utils": ["lib/utils"],
       "@/lib/*": ["lib/*"],
-      "@/app/*": ["app/*"],
       "@/components/*": ["components/*"],
+      "@/app/*": ["app/*"],
       "@/styles/*": ["styles/*"],
       "@/*": ["./*"]
     },
