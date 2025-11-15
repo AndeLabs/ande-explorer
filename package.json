@@ -4,13 +4,11 @@
   "description": "Professional blockchain explorer for Ande Chain with Vercel deployment",
   "main": "public/index.html",
   "scripts": {
-    "dev": "vercel dev",
-    "build": "echo 'No build step required - static files served directly'",
-    "start": "vercel dev",
+    "dev": "cd frontend && npm run dev",
+    "build": "cd frontend && npm install && npm run build",
+    "start": "cd frontend && npm start",
+    "install": "cd frontend && npm install",
     "deploy": "vercel --prod",
-    "preview": "vercel dev --port 3000",
-    "lint": "echo 'No linting configured'",
-    "test": "echo 'No tests configured'",
     "clean": "rm -rf .vercel && vercel clean"
   },
   "keywords": [
@@ -41,12 +39,5 @@
   "devDependencies": {
     "vercel": "^32.4.1"
   },
-  "dependencies": {},
-  "vercel": {
-    "framework": null,
-    "outputDirectory": "public",
-    "installCommand": "echo 'No install needed'",
-    "buildCommand": "echo 'No build needed'",
-    "devCommand": "vercel dev"
-  }
+  "dependencies": {}
 }
