@@ -2,9 +2,6 @@
   "version": 2,
   "name": "ande-explorer-frontend",
   "framework": "nextjs",
-  "buildCommand": "npm run build",
-  "outputDirectory": ".next",
-  "installCommand": "npm install",
   "env": {
     "NEXT_PUBLIC_API_HOST": "explorer.ande.network",
     "NEXT_PUBLIC_API_PROTOCOL": "https",
