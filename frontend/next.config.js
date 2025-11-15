@@ -97,6 +97,23 @@ const nextConfig = {
       transform: 'lucide-react/dist/esm/icons/{{member}}',
     },
   },
+
+  // Force webpack to resolve path aliases
+  webpack: (config, { isServer }) => {
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      '@/lib/config': require('path').resolve(__dirname, 'lib/config'),
+      '@/lib/api': require('path').resolve(__dirname, 'lib/api'),
+      '@/lib/hooks': require('path').resolve(__dirname, 'lib/hooks'),
+      '@/lib/utils': require('path').resolve(__dirname, 'lib/utils'),
+      '@/lib': require('path').resolve(__dirname, 'lib'),
+      '@/components': require('path').resolve(__dirname, 'components'),
+      '@/app': require('path').resolve(__dirname, 'app'),
+      '@/styles': require('path').resolve(__dirname, 'styles'),
+      '@': __dirname,
+    };
+    return config;
+  },
 };
 
 module.exports = nextConfig;
