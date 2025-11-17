@@ -116,7 +116,18 @@ services:
       API_RATE_LIMIT_DISABLED: ${API_RATE_LIMIT_DISABLED:-false}
       API_RATE_LIMIT: ${API_RATE_LIMIT:-50}
       API_RATE_LIMIT_TIME_INTERVAL_MS: ${API_RATE_LIMIT_TIME_INTERVAL_MS:-1000}
-      
+
+      # Microservices Integration
+      MICROSERVICE_SC_VERIFIER_ENABLED: ${MICROSERVICE_SC_VERIFIER_ENABLED:-false}
+      MICROSERVICE_SC_VERIFIER_URL: ${MICROSERVICE_SC_VERIFIER_URL:-}
+      MICROSERVICE_VISUALIZE_SOL2UML_ENABLED: ${MICROSERVICE_VISUALIZE_SOL2UML_ENABLED:-false}
+      MICROSERVICE_VISUALIZE_SOL2UML_URL: ${MICROSERVICE_VISUALIZE_SOL2UML_URL:-}
+      MICROSERVICE_SIG_PROVIDER_ENABLED: ${MICROSERVICE_SIG_PROVIDER_ENABLED:-false}
+      MICROSERVICE_SIG_PROVIDER_URL: ${MICROSERVICE_SIG_PROVIDER_URL:-}
+
+      # Mix Environment
+      MIX_ENV: ${MIX_ENV:-prod}
+
     ports:
       - "${BLOCKSCOUT_PORT:-4000}:4000"
     volumes:
@@ -130,7 +141,7 @@ services:
       retries: 5
       start_period: 120s
 
-  # Smart Contract Verifier (Optional - para verificar contratos)
+  # Smart Contract Verifier - para verificar contratos
   smart-contract-verifier:
     image: ghcr.io/blockscout/smart-contract-verifier:${SMART_CONTRACT_VERIFIER_DOCKER_TAG:-latest}
     restart: always
@@ -143,10 +154,8 @@ services:
       - "${SMART_CONTRACT_VERIFIER_PORT:-8050}:8050"
     networks:
       - blockscout-network
-    profiles:
-      - with-verifier
 
-  # Visualizer Service (Optional - para visualizar contratos)
+  # Visualizer Service - para visualizar contratos
   visualizer:
     image: ghcr.io/blockscout/visualizer:${VISUALIZER_DOCKER_TAG:-latest}
     restart: always
@@ -159,15 +168,14 @@ services:
       - "${VISUALIZER_PORT:-8051}:8051"
     networks:
       - blockscout-network
-    profiles:
-      - with-visualizer
 
-  # Stats Service (Optional - para estadísticas avanzadas)
+  # Stats Service - para estadísticas avanzadas
   stats:
     image: ghcr.io/blockscout/stats:${STATS_DOCKER_TAG:-latest}
     restart: always
     container_name: blockscout-stats
     depends_on:
+      - db
       - backend
     environment:
       STATS__DB_URL: postgresql://${POSTGRES_USER:-blockscout}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-blockscout}
@@ -178,8 +186,16 @@ services:
       - "${STATS_PORT:-8080}:8080"
     networks:
       - blockscout-network
-    profiles:
-      - with-stats
+
+  # Sig Provider - para decodificar firmas de funciones
+  sig-provider:
+    image: ghcr.io/blockscout/sig-provider:latest
+    restart: always
+    container_name: blockscout-sig-provider
+    ports:
+      - "8083:8083"
+    networks:
+      - blockscout-network
 
 volumes:
   blockscout-db-data:
