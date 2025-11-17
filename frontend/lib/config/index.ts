@@ -55,18 +55,18 @@ export const config = {
 
   // Cache times (in milliseconds)
   cache: {
-    blocks: 30_000, // 30 seconds
-    transactions: 30_000, // 30 seconds
-    address: 60_000, // 1 minute
-    stats: 10_000, // 10 seconds
-    gasPrice: 5_000, // 5 seconds
+    blocks: 5_000, // 5 seconds - faster refresh
+    transactions: 5_000, // 5 seconds - faster refresh
+    address: 10_000, // 10 seconds - faster refresh
+    stats: 3_000, // 3 seconds - real-time feel
+    gasPrice: 3_000, // 3 seconds - real-time feel
   },
 
   // Refresh intervals (in milliseconds)
   refresh: {
-    stats: 30_000, // 30 seconds
-    latestBlocks: 12_000, // 12 seconds (average block time)
-    gasPrice: 15_000, // 15 seconds
+    stats: 5_000, // 5 seconds - faster updates
+    latestBlocks: 5_000, // 5 seconds - faster than block time
+    gasPrice: 5_000, // 5 seconds - faster updates
   },
 
   // Social links (optional)

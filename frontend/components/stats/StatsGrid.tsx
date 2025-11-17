@@ -1,12 +1,23 @@
 'use client';
 
 import { useNetworkStats } from '@/lib/hooks/useNetworkStatsRPC';
+import { useWatchBlocks } from '@/lib/hooks/useBlocksRPC';
 import { StatsCard } from './StatsCard';
 import { formatNumber } from '@/lib/utils/format';
 import { Activity, Blocks, Clock, Zap } from 'lucide-react';
+import { useEffect } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 
 export function StatsGrid() {
   const { data: stats, isLoading } = useNetworkStats();
+  const queryClient = useQueryClient();
+  
+  // Watch for new blocks via WebSocket and invalidate stats
+  useWatchBlocks({
+    onNewBlock: () => {
+      queryClient.invalidateQueries({ queryKey: ['network-stats'] });
+    },
+  });
 
   return (
     <section className="py-12 bg-gradient-to-b from-background to-muted/20">
