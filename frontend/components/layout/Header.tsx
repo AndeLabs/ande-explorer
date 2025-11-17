@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { Search, Moon, Sun, Menu } from 'lucide-react';
 import { useTheme } from 'next-themes';
@@ -26,10 +27,15 @@ export function Header() {
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <nav className="container-custom flex h-16 items-center justify-between">
         {/* Logo */}
-        <Link href="/" className="flex items-center space-x-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-blue-600 to-purple-600">
-            <span className="text-lg font-bold text-white">A</span>
-          </div>
+        <Link href="/" className="flex items-center space-x-3">
+          <Image
+            src="/logo-32.png"
+            alt="ANDE Logo"
+            width={32}
+            height={32}
+            className="h-8 w-8"
+            priority
+          />
           <span className="text-xl font-bold gradient-text">{config.app.name}</span>
         </Link>
 

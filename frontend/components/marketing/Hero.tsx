@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import { GlobalSearch } from '@/components/search/GlobalSearch';
 import { config } from '@/lib/config';
 
@@ -9,6 +10,18 @@ export function Hero() {
 
       <div className="container-custom relative">
         <div className="mx-auto max-w-3xl text-center">
+          {/* Logo */}
+          <div className="mb-6 flex justify-center">
+            <Image
+              src="/logo-192.png"
+              alt="ANDE Logo"
+              width={120}
+              height={120}
+              className="h-24 w-24 sm:h-28 sm:w-28 md:h-32 md:w-32 drop-shadow-2xl"
+              priority
+            />
+          </div>
+
           {/* Title */}
           <h1 className="mb-4 text-5xl font-bold tracking-tight sm:text-6xl md:text-7xl">
             Explore {config.chain.name}
