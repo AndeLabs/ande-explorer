@@ -10,11 +10,16 @@ export function QueryProvider({ children }: { children: React.ReactNode }) {
       new QueryClient({
         defaultOptions: {
           queries: {
-            staleTime: 60_000, // 1 minute
-            gcTime: 300_000, // 5 minutes (previously cacheTime)
-            refetchOnWindowFocus: false,
-            retry: 3,
-            retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
+            // PERFORMANCE OPTIMIZATIONS
+            staleTime: 5 * 60_000, // 5 minutos - datos blockchain cambian lento
+            gcTime: 10 * 60_000, // 10 minutos - mantener en memoria
+            refetchOnWindowFocus: false, // No refetch al cambiar de ventana
+            refetchOnMount: false, // No refetch al montar (usa cache)
+            refetchOnReconnect: false, // No refetch al reconectar
+            retry: 1, // Solo 1 retry (más rápido failure)
+            retryDelay: 1000, // 1 segundo entre retries
+            // Network mode
+            networkMode: 'online', // Solo queries cuando hay internet
           },
         },
       })

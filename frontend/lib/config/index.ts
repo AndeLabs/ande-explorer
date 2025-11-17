@@ -54,12 +54,13 @@ export const config = {
   },
 
   // Cache times (in milliseconds)
+  // Optimized for performance - bloques confirmados no cambian!
   cache: {
-    blocks: 5_000, // 5 seconds - faster refresh
-    transactions: 5_000, // 5 seconds - faster refresh
-    address: 10_000, // 10 seconds - faster refresh
-    stats: 3_000, // 3 seconds - real-time feel
-    gasPrice: 3_000, // 3 seconds - real-time feel
+    blocks: 60_000, // 1 minuto - bloques confirmados son inmutables
+    transactions: 60_000, // 1 minuto - TX confirmadas son inmutables
+    address: 5 * 60_000, // 5 minutos - balances cambian poco
+    stats: 30_000, // 30 segundos - stats agregadas
+    gasPrice: 10_000, // 10 segundos - gas price más estable
   },
 
   // Refresh intervals (in milliseconds)

@@ -10,7 +10,11 @@ export function useTransaction(hash: string) {
     queryKey: ['transaction', hash],
     queryFn: () => api.getTransaction(hash),
     enabled: !!hash && hash.startsWith('0x'),
-    staleTime: config.cache.transactions,
+    staleTime: Infinity, // TX confirmadas son immutables
+    gcTime: Infinity, // Keep in cache forever
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
   });
 }
 

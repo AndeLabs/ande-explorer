@@ -1,7 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { useBlocks } from '@/lib/hooks/useBlocks';
+import { api } from '@/lib/api/client';
 import { BlockCard } from '@/components/blocks/BlockCard';
 import { Skeleton } from '@/components/ui/skeleton';
 import { EmptyState } from '@/components/ui/empty-state';
@@ -12,6 +14,19 @@ import { Package, Search } from 'lucide-react';
 export default function BlocksPage() {
   const [page, setPage] = useState(1);
   const { data, isLoading, error, refetch } = useBlocks(page);
+  const queryClient = useQueryClient();
+
+  // PREFETCH: Pre-cargar la siguiente página para navegación instantánea
+  useEffect(() => {
+    if (data?.next_page_params) {
+      // Prefetch siguiente página
+      queryClient.prefetchQuery({
+        queryKey: ['blocks', page + 1],
+        queryFn: () => api.getBlocks(page + 1),
+        staleTime: 60_000, // 1 minuto
+      });
+    }
+  }, [page, data, queryClient]);
 
   // Loading state
   if (isLoading) {

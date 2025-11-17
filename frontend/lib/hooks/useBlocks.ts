@@ -10,8 +10,11 @@ export function useBlock(heightOrHash: string | number) {
     queryKey: ['block', heightOrHash],
     queryFn: () => api.getBlock(heightOrHash),
     enabled: !!heightOrHash,
-    staleTime: Infinity, // Blocks don't change
-    gcTime: Infinity,
+    staleTime: Infinity, // Blocks don't change - IMMUTABLE
+    gcTime: Infinity, // Keep in cache forever
+    refetchOnMount: false, // Don't refetch on component mount
+    refetchOnWindowFocus: false, // Don't refetch on window focus
+    refetchOnReconnect: false, // Don't refetch on reconnect
   });
 }
 

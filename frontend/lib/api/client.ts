@@ -38,9 +38,10 @@ class BlockScoutAPI {
   constructor(baseURL: string) {
     this.client = axios.create({
       baseURL,
-      timeout: 30000,
+      timeout: 10000, // 10 segundos (antes: 30s) - fail fast
       headers: {
         'Content-Type': 'application/json',
+        'Accept-Encoding': 'gzip, deflate, br', // Compression
       },
     });
 

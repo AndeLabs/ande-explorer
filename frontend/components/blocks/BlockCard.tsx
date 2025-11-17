@@ -23,6 +23,7 @@ export function BlockCard({ block, isNew, className = '' }: BlockCardProps) {
             <Package className="h-5 w-5 text-blue-600" />
             <Link
               href={`/blocks/${block.height}`}
+              prefetch={true}
               className="text-lg font-semibold text-blue-600 hover:underline"
             >
               Block #{formatNumber(block.height)}
@@ -41,6 +42,7 @@ export function BlockCard({ block, isNew, className = '' }: BlockCardProps) {
               <span className="text-muted-foreground">Miner:</span>
               <Link
                 href={`/address/${block.miner}`}
+                prefetch={true}
                 className="font-mono text-blue-600 hover:underline"
               >
                 {formatAddress(block.miner)}
