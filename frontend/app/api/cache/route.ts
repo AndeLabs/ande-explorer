@@ -4,7 +4,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { redis, getCacheKey, CACHE_TTL } from '@/lib/cache/redis';
+import { redis, getCacheKey, CACHE_TTL } from '@/lib/cache/upstash';
 
 /**
  * GET /api/cache/stats

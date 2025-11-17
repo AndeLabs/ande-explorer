@@ -1,0 +1,106 @@
+# ================================================================
+# VARIABLES DE ENTORNO PARA VERCEL - UPSTASH REDIS
+# ================================================================
+# IMPORTANTE: Necesitas obtener la REST URL y TOKEN de tu cuenta Upstash
+# ================================================================
+
+# 1. Ve a: https://console.upstash.com/
+# 2. Busca tu database o crea una nueva
+# 3. En la página de la database, busca "REST API" section
+# 4. Copia los valores y agrégalos en Vercel:
+
+# ================================================================
+# PASO 1: Ir a Vercel Dashboard
+# ================================================================
+# https://vercel.com/dashboard → tu-proyecto → Settings → Environment Variables
+
+# ================================================================
+# PASO 2: Agregar estas 3 variables
+# ================================================================
+
+# Variable 1:
+Name: REDIS_ENABLED
+Value: true
+Environments: ☑ Production ☑ Preview ☑ Development
+
+# Variable 2:
+Name: UPSTASH_REDIS_REST_URL
+Value: [COPIAR DE UPSTASH CONSOLE - debe ser algo como https://xxxxx-xxxxx.upstash.io]
+Environments: ☑ Production ☑ Preview ☑ Development
+
+# Variable 3:
+Name: UPSTASH_REDIS_REST_TOKEN
+Value: [COPIAR DE UPSTASH CONSOLE - API Key que proporcionaste: 9b85f3e5-90b4-4d12-9b4e-2f2bf9761d98]
+Environments: ☑ Production ☑ Preview ☑ Development
+
+# ================================================================
+# DONDE ENCONTRAR LOS VALORES EN UPSTASH
+# ================================================================
+
+# 1. Ve a: https://console.upstash.com/redis
+# 2. Selecciona tu database (o crea una nueva con nombre: ande-explorer-cache)
+# 3. En la página de la database verás:
+#
+#    📋 REST API
+#    ─────────────────────────────────────────
+#    UPSTASH_REDIS_REST_URL
+#    https://xxxxx-xxxxx.upstash.io
+#
+#    UPSTASH_REDIS_REST_TOKEN
+#    AxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxQ==
+#
+# 4. Copiar esos valores exactamente
+
+# ================================================================
+# SI NO TIENES DATABASE EN UPSTASH
+# ================================================================
+
+# 1. Crear cuenta: https://console.upstash.com/
+# 2. Click "Create Database"
+# 3. Configuración:
+#    - Name: ande-explorer-cache
+#    - Type: Regional (más económico)
+#    - Region: us-east-1 (o el más cercano a tus usuarios)
+#    - TLS: Enabled
+#    - Eviction: enabled
+# 4. Click "Create"
+# 5. Copiar las credenciales (REST API section)
+
+# ================================================================
+# DESPUÉS DE AGREGAR EN VERCEL
+# ================================================================
+
+# 1. Ir a: Deployments tab
+# 2. Click en "..." del último deployment
+# 3. Click "Redeploy"
+# 4. Esperar ~2 minutos
+# 5. Verificar: https://explorer.ande.network
+# 6. Verificar cache: https://explorer.ande.network/api/cache?action=stats
+
+# ================================================================
+# VERIFICACIÓN DE QUE FUNCIONA
+# ================================================================
+
+# Deberías ver en cache stats:
+# {
+#   "keys": 0,
+#   "enabled": true,
+#   "provider": "upstash"
+# }
+
+# Después de navegar un poco, "keys" debería incrementar.
+
+# ================================================================
+# NOTAS IMPORTANTES
+# ================================================================
+
+# ✅ El código ya está listo para Upstash
+# ✅ Solo falta agregar las 3 variables en Vercel
+# ✅ Redis se activará automáticamente al deployar
+# ✅ Performance mejorará 5-10x inmediatamente
+
+# ❗ SI TIENES PROBLEMAS:
+# - Verifica que REDIS_ENABLED=true
+# - Verifica que URL y TOKEN sean correctos
+# - Verifica que no haya espacios extra
+# - Mira logs en Vercel: Functions → tu-deployment → Logs

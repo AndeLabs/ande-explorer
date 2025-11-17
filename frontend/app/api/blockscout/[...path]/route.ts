@@ -4,7 +4,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { redis, getCacheKey, CACHE_TTL } from '@/lib/cache/redis';
+import { redis, getCacheKey, CACHE_TTL } from '@/lib/cache/upstash';
 
 const BLOCKSCOUT_API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://192.168.0.8:4000/api';
 
