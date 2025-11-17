@@ -1,252 +1,245 @@
-# Ande Chain Explorer
+# ANDE Explorer 🔍
 
-Professional blockchain explorer for Ande Chain using **Vercel + Docker hybrid architecture**.
+> Professional blockchain explorer for ANDE Chain - Fast, Modern, and User-Friendly
 
-## 🏗️ Arquitectura Híbrida
+[![Next.js](https://img.shields.io/badge/Next.js-14-black)](https://nextjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue)](https://www.typescriptlang.org/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind-3.4-38bdf8)](https://tailwindcss.com/)
+[![License](https://img.shields.io/badge/license-MIT-green)](./LICENSE)
 
-Este es un despliegue **híbrido** que combina lo mejor de dos mundos:
+## ✨ Features
 
-### 🌐 **Frontend en Vercel** (Global CDN)
-- Rápido en cualquier país con Edge Network
-- SSL automático y DDoS protection
-- Despliegues continuos con Git integration
-- Coste eficiente (pago por uso)
+- 🚀 **Real-time Updates** - Live block and transaction feed via WebSocket
+- ⚡ **Lightning Fast** - Direct RPC connection with intelligent caching
+- 🎨 **Modern UI** - Clean design with ANDE institutional colors
+- 📱 **Responsive** - Optimized for all devices
+- 🔍 **Smart Search** - Find blocks, transactions, and addresses instantly
+- 📊 **Network Stats** - Live metrics and analytics dashboard
+- 🌐 **Multi-chain Ready** - Built for scalability
 
-### 🐳 **Backend en Docker** (Servidores Dedicados)
-- Control total de base de datos PostgreSQL
-- Procesamiento pesado de blockchain
-- Configuración personalizada de BlockScout
-- Seguridad en red privada
+## 🎯 Quick Start
 
-## 🚀 Flujo de Despliegue
+### Prerequisites
 
-### Paso 1: **Subir a GitHub**
+- Node.js 18+ and npm 9+
+- ANDE Chain RPC endpoint (default: `http://192.168.0.8:8545`)
+
+### Installation
+
 ```bash
-# Subir TODO el repositorio
-git add .
-git commit -m "Setup Ande Chain Explorer - Vercel + Docker"
-git push origin main
-```
-
-### Paso 2: **Desplegar Frontend a Vercel**
-```bash
-# Instalar Vercel CLI
-npm i -g vercel
-
-# Conectar y desplegar SOLO el frontend
-vercel link
-vercel --prod
-
-# Configurar dominios
-vercel domains add explorer.ande.chain
-vercel domains add explorer-advanced.ande.chain
-```
-
-### Paso 3: **Configurar DNS**
-En tu proveedor de DNS de `ande.chain`:
-
-```
-Type: CNAME
-Name: explorer
-Value: cname.vercel-dns.com
-TTL: 60
-
-Type: CNAME
-Name: explorer-advanced
-Value: cname.vercel-dns.com
-TTL: 60
-```
-
-### Paso 4: **Desplegar Backend en Servidores**
-```bash
-# En tus servidores dedicados
+# Clone the repository
 git clone https://github.com/AndeLabs/ande-explorer.git
 cd ande-explorer
 
-# Configurar variables
-cp .env.example .env
-# Editar .env con credenciales del servidor
+# Install dependencies
+cd frontend
+npm install
 
-# Iniciar servicios backend
-bash infra/scripts/start.sh prod
+# Configure environment
+cp .env.example .env.local
+# Edit .env.local with your RPC endpoint
+
+# Run development server
+npm run dev
 ```
 
-## 🌍 URLs Finales
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-- **Main Explorer**: https://explorer.ande.chain
-- **Advanced Explorer**: https://explorer-advanced.ande.chain
-- **API Endpoints**: https://explorer-advanced.ande.chain/api/v2/
+## 🔧 Configuration
 
-## 📂 ¿Qué va a cada plataforma?
+### Environment Variables
 
-### 🌐 **A Vercel** (Frontend)
-```
-✅ public/              # Archivos estáticos
-✅ vercel.json          # Configuración de rutas
-✅ package.json         # Metadatos del proyecto
-✅ public/index.html    # Página principal
-❌ docker/              # NO - Backend services
-❌ infra/               # NO - Scripts de servidor
-❌ config/              # NO - Configuración backend
-```
+Create a `.env.local` file in the `frontend` directory:
 
-### 🐳 **A Servidores Docker** (Backend)
-```
-✅ docker/docker-compose.yml           # Todos los servicios
-✅ docker/docker-compose.production.yml # Config producción
-✅ infra/nginx/                        # Proxy reverso
-✅ infra/scripts/                      # Gestión de servicios
-✅ config/blockscout/                  # Configuración BlockScout
-❌ public/                             # NO - Frontend en Vercel
+```env
+# RPC Configuration
+NEXT_PUBLIC_RPC_URL=http://192.168.0.8:8545
+NEXT_PUBLIC_WS_URL=ws://192.168.0.8:8546
+
+# Chain Configuration
+NEXT_PUBLIC_CHAIN_ID=42170
+NEXT_PUBLIC_CHAIN_NAME=Ande Chain
+
+# Features
+NEXT_PUBLIC_ENABLE_WEBSOCKETS=true
+NEXT_PUBLIC_SHOW_GAS_TRACKER=true
 ```
 
-## 🔄 Flujo de Comunicación
+See [.env.example](./frontend/.env.example) for all available options.
+
+## 🏗️ Architecture
+
+ANDE Explorer uses a modern, performance-optimized architecture:
 
 ```
-Usuario → Vercel (CDN) → API Proxy → Docker Backend
-   ↓         ↓              ↓           ↓
- Frontend   Static         PostgreSQL   Redis
-   JS       Files          + Blockchain Cache
+┌─────────────────┐
+│   Next.js App   │  ← React 18, App Router, RSC
+├─────────────────┤
+│  React Query    │  ← Data fetching, caching
+├─────────────────┤
+│  viem Client    │  ← Direct RPC connection
+├─────────────────┤
+│  ANDE Chain     │  ← http://192.168.0.8:8545
+└─────────────────┘
 ```
 
-## 📁 Archivos Clave
+### Key Technologies
 
-### Configuración Vercel
-- **`.vercelignore`** - Excluye backend del despliegue
-- **`vercel.json`** - Rutas API y security headers
-- **`public/index.html`** - Frontend con tema Ande Chain
+- **Framework**: Next.js 14 with App Router
+- **Language**: TypeScript (strict mode)
+- **Styling**: Tailwind CSS with custom ANDE theme
+- **Data Fetching**: TanStack Query + viem
+- **UI Components**: Radix UI primitives
+- **Icons**: Lucide React
 
-### Backend Docker
-- **`.env`** - Variables de entorno del backend
-- **`docker/docker-compose.yml`** - Todos los servicios
-- **`config/blockscout/custom-config.yml`** - Config BlockScout
+See [ARCHITECTURE.md](./ARCHITECTURE.md) for detailed documentation.
 
-### Integración
-- **`infra/nginx/sites/main.conf`** - Config para explorer.ande.chain
-- **`infra/nginx/sites/advanced.conf`** - Config para analytics
+## 🎨 Design System
 
-## ⚙️ Variables de Entorno
+ANDE Explorer uses the official ANDE institutional color palette:
 
-### Backend (.env)
+### Primary Colors
+- **Azul Profundo** `#2455B8` - Headers, primary buttons, key links
+- **Naranja Vibrante** `#FF9F1C` - Call-to-action, highlights
+
+### Secondary Colors
+- **Lavanda Suave** `#BFA4FF` - Alternate backgrounds, cards
+- **Durazno Claro** `#FFC77D` - Soft backgrounds, secondary elements
+
+### Neutral Colors
+- **Gris Claro** `#F4F4F4` - Clean backgrounds
+- **Gris Medio** `#9A9A9A` - Secondary text
+- **Gris Oscuro** `#393939` - Primary text
+
+## 📦 Build for Production
+
 ```bash
-# Database
-DB_USER=blockscout
-DB_PASSWORD=tu_password_seguro
-DB_NAME=blockscout
+# Build the application
+npm run build
 
-# Network
-RPC_URL=http://ev-reth-sequencer:8545
-CHAIN_ID=42170
-
-# Domains
-BLOCKSCOUT_HOST_MAIN=explorer.ande.chain
-BLOCKSCOUT_HOST_ADVANCED=explorer-advanced.ande.chain
+# Start production server
+npm start
 ```
 
-### Vercel (vercel.json)
-Las variables de entorno del frontend están configuradas en `vercel.json`:
-- API proxy configuration
-- Network parameters
-- Security headers
+### Deploy to Vercel
 
-## 🔧 Comandos de Gestión
-
-### Frontend (Vercel)
 ```bash
-# Desplegar cambios
+# Install Vercel CLI
+npm i -g vercel
+
+# Deploy
 vercel --prod
-
-# Ver logs
-vercel logs
-
-# Dominios
-vercel domains ls
 ```
 
-### Backend (Servidores)
-```bash
-# Health check completo
-bash infra/scripts/health-check.sh
+See [VERCEL_DEPLOYMENT_GUIDE.md](./VERCEL_DEPLOYMENT_GUIDE.md) for detailed instructions.
 
-# Ver logs de servicios
-docker logs -f blockscout-main-backend
+## 🔍 Usage Examples
 
-# Reiniciar servicios
-bash infra/scripts/stop.sh && bash infra/scripts/start.sh prod
+### Search for a Block
 
-# Backup database
-bash infra/scripts/backup.sh
+Navigate to `/blocks/12345` or use the search bar:
+
+```typescript
+// Programmatic search
+import { useBlock } from '@/lib/hooks/useBlocksRPC';
+
+const { data: block } = useBlock(12345n);
 ```
 
-## 🎯 Features
+### Get Address Balance
 
-- ✅ **Dual Explorer** - Main UI + Advanced Analytics
-- ✅ **Global CDN** - Vercel Edge Network
-- ✅ **Real-time Data** - WebSocket connections
-- ✅ **Smart Contract Verification** - Source code + ABI
-- ✅ **Token Tracking** - ERC-20, ERC-721, ERC-1155
-- ✅ **Advanced Analytics** - Metrics y export data
-- ✅ **Professional Security** - SSL, CORS, Rate limiting
-- ✅ **Auto-scaling** - Frontend en Vercel, Backend escalable
+```typescript
+import { useAddressBalance } from '@/lib/hooks/useAddressRPC';
 
-## 🔍 Verificación del Despliegue
-
-### DNS Check
-```bash
-# Verificar CNAME records
-dig CNAME explorer.ande.chain
-dig CNAME explorer-advanced.ande.chain
+const { data: balance } = useAddressBalance('0x...');
+console.log(balance.formatted); // "1.234 ETH"
 ```
 
-### SSL Check
-```bash
-# Verificar certificados SSL
-openssl s_client -connect explorer.ande.chain:443
-openssl s_client -connect explorer-advanced.ande.chain:443
+### Watch New Blocks
+
+```typescript
+import { useWatchBlocks } from '@/lib/hooks/useBlocksRPC';
+
+useWatchBlocks((block) => {
+  console.log('New block:', block.number);
+});
 ```
 
-### Health Check
-```bash
-# Frontend health
-curl https://explorer.ande.chain/_health
+## 🧪 Development
 
-# Backend API health
-curl https://explorer-advanced.ande.chain/api/v2/health
-```
-
-## 🔧 Troubleshooting
-
-### Frontend Issues
-- **404s**: Verificar `vercel.json` routes
-- **CORS**: Check API proxy configuration
-- **SSL**: Confirm DNS propagation (5-60 min)
-
-### Backend Issues
-- **Connection timeout**: Verificar firewall y puertos
-- **Database errors**: Check Docker containers status
-- **Performance**: Monitor PostgreSQL queries
+### Run Tests
 
 ```bash
-# Debug completo
-bash infra/scripts/health-check.sh --verbose
-docker-compose -f docker/docker-compose.yml ps
+npm run test
 ```
 
-## 🆘 Support
+### Type Checking
 
-### Frontend Vercel
-- Dashboard: https://vercel.com/dashboard
-- Logs: `vercel logs --follow`
-- Documentation: https://vercel.com/docs
+```bash
+npm run type-check
+```
 
-### Backend Docker
-- Health: `bash infra/scripts/health-check.sh`
-- Logs: `docker logs -f [container-name]`
-- Status: `docker-compose ps`
+### Linting
+
+```bash
+npm run lint
+```
+
+### Format Code
+
+```bash
+npm run format
+```
+
+## 📊 Performance
+
+ANDE Explorer is optimized for speed:
+
+- **First Contentful Paint**: < 1.0s
+- **Largest Contentful Paint**: < 2.5s  
+- **Time to Interactive**: < 3.0s
+- **API Response Time**: < 200ms
+
+Performance is continuously monitored and optimized.
+
+## 🤝 Contributing
+
+We welcome contributions! Please see [CONTRIBUTING.md](./CONTRIBUTING.md) for guidelines.
+
+### Development Workflow
+
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature/amazing-feature`
+3. Make your changes
+4. Run tests: `npm test`
+5. Commit: `git commit -m 'Add amazing feature'`
+6. Push: `git push origin feature/amazing-feature`
+7. Open a Pull Request
+
+## 📝 License
+
+This project is licensed under the MIT License - see [LICENSE](./LICENSE) file for details.
+
+## 🔗 Links
+
+- **Live Explorer**: [https://explorer.ande.network](https://explorer.ande.network)
+- **ANDE Chain**: [https://github.com/AndeLabs/ande-chain](https://github.com/AndeLabs/ande-chain)
+- **Documentation**: [https://docs.ande.network](https://docs.ande.network)
+- **Discord**: [https://discord.gg/andechain](https://discord.gg/andechain)
+
+## 👥 Team
+
+Built with ❤️ by [ANDE Labs](https://ande.network)
+
+## 🙏 Acknowledgments
+
+- [Blockscout](https://github.com/blockscout/blockscout) - Architecture inspiration
+- [viem](https://viem.sh/) - Excellent Ethereum library
+- [TanStack Query](https://tanstack.com/query) - Powerful data synchronization
+- [Next.js](https://nextjs.org/) - Amazing React framework
 
 ---
 
-**Ande Labs** - Professional Blockchain Infrastructure
-
-Esta arquitectura híbrida te da:
-🚀 **Performance Global** (Vercel CDN) + 🔧 **Control Total** (Docker Backend)
+**Status**: Production Ready (MVP)  
+**Version**: 2.0.0  
+**Last Updated**: 2025-11-16

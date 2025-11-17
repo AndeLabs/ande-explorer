@@ -1,45 +1,77 @@
 import { Card } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils/cn';
+import { ReactNode } from 'react';
 
 interface StatsCardProps {
   title: string;
   value: string | number;
-  icon?: string;
+  subtitle?: string;
+  icon?: string | ReactNode;
   trend?: string;
   loading?: boolean;
   className?: string;
+  colorClass?: string;
 }
 
-export function StatsCard({ title, value, icon, trend, loading, className }: StatsCardProps) {
+export function StatsCard({ 
+  title, 
+  value, 
+  subtitle,
+  icon, 
+  trend, 
+  loading, 
+  className,
+  colorClass = 'bg-primary/10 text-primary'
+}: StatsCardProps) {
   if (loading) {
     return (
-      <Card className={cn('p-6', className)}>
+      <Card className={cn('p-6 border-neutral-light/20', className)}>
         <Skeleton className="mb-2 h-4 w-24" />
         <Skeleton className="h-8 w-32" />
-        {trend && <Skeleton className="mt-2 h-3 w-16" />}
+        <Skeleton className="mt-2 h-3 w-16" />
       </Card>
     );
   }
 
   return (
-    <Card className={cn('p-6 transition-all hover:shadow-lg', className)}>
-      <div className="flex items-start justify-between">
-        <div className="flex-1">
-          <p className="text-sm font-medium text-muted-foreground">{title}</p>
-          <p className="mt-2 text-3xl font-bold">{value}</p>
+    <Card className={cn(
+      'p-6 transition-all hover:shadow-lg hover:scale-105 border-neutral-light/20 bg-card/50 backdrop-blur-sm', 
+      className
+    )}>
+      <div className="flex items-start justify-between gap-4">
+        <div className="flex-1 min-w-0">
+          <p className="text-sm font-medium text-neutral-dark/70 dark:text-neutral-light/70">
+            {title}
+          </p>
+          <p className="mt-2 text-2xl sm:text-3xl font-bold text-neutral-dark dark:text-white truncate">
+            {value}
+          </p>
+          {subtitle && (
+            <p className="mt-1 text-xs text-neutral-medium">
+              {subtitle}
+            </p>
+          )}
           {trend && (
             <p
               className={cn(
                 'mt-2 text-xs font-medium',
-                trend.startsWith('+') ? 'text-green-600' : trend.startsWith('-') ? 'text-red-600' : 'text-gray-600'
+                trend.startsWith('+') ? 'text-success' : trend.startsWith('-') ? 'text-destructive' : 'text-neutral-medium'
               )}
             >
               {trend}
             </p>
           )}
         </div>
-        {icon && <span className="text-4xl">{icon}</span>}
+        {icon && (
+          <div className={cn('flex h-12 w-12 shrink-0 items-center justify-center rounded-lg', colorClass)}>
+            {typeof icon === 'string' ? (
+              <span className="text-2xl">{icon}</span>
+            ) : (
+              icon
+            )}
+          </div>
+        )}
       </div>
     </Card>
   );
