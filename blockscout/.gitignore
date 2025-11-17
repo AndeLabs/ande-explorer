@@ -1,0 +1,13 @@
+# Environment variables
+.env
+
+# Docker volumes data
+data/
+
+# Logs
+logs/
+*.log
+
+# Temporary files
+*.tmp
+.DS_Store
