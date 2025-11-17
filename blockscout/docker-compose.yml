@@ -49,6 +49,7 @@ services:
     image: blockscout/blockscout:${DOCKER_TAG:-latest}
     restart: always
     container_name: blockscout-backend
+    command: sh -c 'bin/blockscout start'
     depends_on:
       db:
         condition: service_healthy
@@ -127,6 +128,9 @@ services:
 
       # Mix Environment
       MIX_ENV: ${MIX_ENV:-prod}
+
+      # Database Migrations
+      RUN_MIGRATIONS: ${RUN_MIGRATIONS:-true}
 
     ports:
       - "${BLOCKSCOUT_PORT:-4000}:4000"
