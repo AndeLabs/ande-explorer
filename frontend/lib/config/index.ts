@@ -6,25 +6,25 @@
 export const config = {
   // Chain configuration
   chain: {
-    id: Number(process.env.NEXT_PUBLIC_CHAIN_ID) || 42170,
+    id: Number(process.env.NEXT_PUBLIC_CHAIN_ID) || 6174,
     name: process.env.NEXT_PUBLIC_CHAIN_NAME || 'Ande Chain',
-    currency: process.env.NEXT_PUBLIC_NETWORK_CURRENCY || 'ETH',
+    currency: process.env.NEXT_PUBLIC_NETWORK_CURRENCY || 'ANDE',
     decimals: Number(process.env.NEXT_PUBLIC_NETWORK_CURRENCY_DECIMALS) || 18,
     isL2: process.env.NEXT_PUBLIC_IS_L2_NETWORK === 'true',
   },
 
   // API endpoints
   api: {
-    baseUrl: process.env.NEXT_PUBLIC_API_URL || 'https://explorer-advanced.ande.chain/api',
-    wsUrl: process.env.NEXT_PUBLIC_WS_URL || 'wss://explorer-advanced.ande.chain/ws',
-    rpcUrl: process.env.NEXT_PUBLIC_RPC_URL || 'https://rpc.ande.chain',
+    baseUrl: process.env.NEXT_PUBLIC_API_URL || 'https://api.ande.network/api',
+    wsUrl: process.env.NEXT_PUBLIC_WS_URL || 'wss://ws.ande.network',
+    rpcUrl: process.env.NEXT_PUBLIC_RPC_URL || 'https://rpc.ande.network',
   },
 
   // Explorer URLs
   explorer: {
-    main: process.env.NEXT_PUBLIC_EXPLORER_URL || 'https://explorer.ande.chain',
+    main: process.env.NEXT_PUBLIC_EXPLORER_URL || 'https://explorer.ande.network',
     advanced:
-      process.env.NEXT_PUBLIC_ADVANCED_EXPLORER_URL || 'https://explorer-advanced.ande.chain',
+      process.env.NEXT_PUBLIC_ADVANCED_EXPLORER_URL || 'https://explorer.ande.network',
   },
 
   // Features
@@ -74,8 +74,8 @@ export const config = {
   social: {
     twitter: 'https://twitter.com/andechain',
     discord: 'https://discord.gg/andechain',
-    github: 'https://github.com/andelabs',
-    docs: 'https://docs.ande.chain',
+    github: 'https://github.com/AndeLabs',
+    docs: 'https://docs.ande.network',
   },
 } as const;
 
