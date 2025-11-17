@@ -46,8 +46,8 @@ export function formatNumber(num: number | string): string {
 /**
  * Format address to shortened version
  */
-export function formatAddress(address: string, startChars = 6, endChars = 4): string {
-  if (!address) return '';
+export function formatAddress(address: string | null | undefined, startChars = 6, endChars = 4): string {
+  if (!address || typeof address !== 'string') return '';
   if (address.length <= startChars + endChars) return address;
   return `${address.slice(0, startChars)}...${address.slice(-endChars)}`;
 }
@@ -55,8 +55,8 @@ export function formatAddress(address: string, startChars = 6, endChars = 4): st
 /**
  * Format transaction hash
  */
-export function formatHash(hash: string, startChars = 10, endChars = 8): string {
-  if (!hash) return '';
+export function formatHash(hash: string | null | undefined, startChars = 10, endChars = 8): string {
+  if (!hash || typeof hash !== 'string') return '';
   if (hash.length <= startChars + endChars) return hash;
   return `${hash.slice(0, startChars)}...${hash.slice(-endChars)}`;
 }
