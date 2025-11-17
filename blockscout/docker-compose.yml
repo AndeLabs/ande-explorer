@@ -184,6 +184,7 @@ services:
     environment:
       STATS__DB_URL: postgresql://${POSTGRES_USER:-blockscout}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-blockscout}
       STATS__BLOCKSCOUT_DB_URL: postgresql://${POSTGRES_USER:-blockscout}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-blockscout}
+      STATS__BLOCKSCOUT_API_URL: http://backend:4000
       STATS__CREATE_DATABASE: ${STATS_CREATE_DATABASE:-true}
       STATS__RUN_MIGRATIONS: ${STATS_RUN_MIGRATIONS:-true}
     ports:
