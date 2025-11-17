@@ -86,8 +86,23 @@ echo ""
 echo -e "${BLUE}PASO 2: Configurando Variables de Entorno${NC}"
 echo "================================================================"
 
+# Determinar el directorio correcto
+if [ -d "/home/sator/ande-explorer" ]; then
+    PROJECT_DIR="/home/sator/ande-explorer"
+elif [ -d "$HOME/ande-explorer" ]; then
+    PROJECT_DIR="$HOME/ande-explorer"
+else
+    echo -e "${RED}❌ No se encontró ande-explorer${NC}"
+    exit 1
+fi
+
+echo -e "${YELLOW}📁 Proyecto en: $PROJECT_DIR${NC}"
+
+# Crear .env.local si no existe
+touch $PROJECT_DIR/frontend/.env.local
+
 # Actualizar .env para producción
-cat >> ~/ande-explorer/frontend/.env.local <<EOF
+cat >> $PROJECT_DIR/frontend/.env.local <<EOF
 
 # ================================================================
 # PERFORMANCE OPTIMIZATIONS
@@ -108,7 +123,7 @@ echo ""
 echo -e "${BLUE}PASO 3: Instalando dependencias${NC}"
 echo "================================================================"
 
-cd ~/ande-explorer/frontend
+cd $PROJECT_DIR/frontend
 
 # Instalar ioredis si no está
 if ! grep -q "ioredis" package.json; then
@@ -141,7 +156,7 @@ echo "  ✅ Cache times optimizados"
 echo "  ✅ API timeout reducido (10s)"
 echo ""
 echo -e "${YELLOW}📝 Próximos pasos:${NC}"
-echo "  1. Rebuild frontend: cd ~/ande-explorer/frontend && npm run build"
+echo "  1. Rebuild frontend: cd $PROJECT_DIR/frontend && npm run build"
 echo "  2. Restart app o deploy a Vercel"
 echo "  3. Monitorear cache: redis-cli MONITOR"
 echo "  4. Ver stats: curl localhost:3000/api/cache?action=stats"
