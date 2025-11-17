@@ -41,7 +41,7 @@ class BlockScoutAPI {
       timeout: 10000, // 10 segundos (antes: 30s) - fail fast
       headers: {
         'Content-Type': 'application/json',
-        'Accept-Encoding': 'gzip, deflate, br', // Compression
+        // Note: Accept-Encoding is set automatically by browsers
       },
     });
 
@@ -285,9 +285,11 @@ class BlockScoutAPI {
 
   /**
    * Get gas prices
+   * Note: Gas prices are included in /v2/stats, not a separate endpoint
    */
   async getGasPrices(): Promise<any> {
-    return this.client.get('/v2/stats/gas-prices');
+    const stats = await this.getNetworkStats();
+    return stats.gas_prices || { slow: 0.01, average: 0.01, fast: 0.01 };
   }
 }
 
