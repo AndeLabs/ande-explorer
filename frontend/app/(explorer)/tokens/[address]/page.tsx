@@ -10,6 +10,7 @@ import { ErrorState } from '@/components/ui/error-state';
 import { EmptyState } from '@/components/ui/empty-state';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Pagination } from '@/components/ui/pagination';
+import { TokenHolderDistribution } from '@/components/tokens/TokenHolderDistribution';
 import {
   formatNumber,
   formatAddress,
@@ -203,6 +204,13 @@ export default function TokenDetailsPage({ params }: { params: { address: string
         <TabsContent value="holders" className="space-y-4">
           {holders && holders.items && holders.items.length > 0 ? (
             <>
+              {/* Holder Distribution Pie Chart */}
+              <TokenHolderDistribution
+                holders={holders.items}
+                totalSupply={token.total_supply || '0'}
+                isLoading={false}
+              />
+
               <Card>
                 <CardHeader>
                   <CardTitle>Top Holders</CardTitle>
