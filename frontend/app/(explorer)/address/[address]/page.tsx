@@ -19,6 +19,8 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { TransactionCard } from '@/components/transactions/TransactionCard';
 import { Pagination } from '@/components/ui/pagination';
 import { ContractVerification } from '@/components/contracts/ContractVerification';
+import { ContractInteraction } from '@/components/contracts/ContractInteraction';
+import { NFTGallery } from '@/components/nft/NFTGallery';
 import {
   formatWeiToEther,
   copyToClipboard,
@@ -34,6 +36,7 @@ import {
   ArrowRightLeft,
   Zap,
   Activity,
+  Image,
 } from 'lucide-react';
 
 export default function AddressPage({ params }: { params: { address: string } }) {
@@ -311,6 +314,10 @@ export default function AddressPage({ params }: { params: { address: string } })
               Tokens ({tokens.items.length})
             </TabsTrigger>
           )}
+          <TabsTrigger value="nfts" className="flex items-center gap-2">
+            <Image className="h-4 w-4" />
+            NFTs
+          </TabsTrigger>
           {addressInfo.is_contract && (
             <TabsTrigger value="contract" className="flex items-center gap-2">
               <FileCode className="h-4 w-4" />
@@ -390,10 +397,16 @@ export default function AddressPage({ params }: { params: { address: string } })
           </TabsContent>
         )}
 
+        {/* NFTs Tab */}
+        <TabsContent value="nfts">
+          <NFTGallery address={address} />
+        </TabsContent>
+
         {/* Contract Tab */}
         {addressInfo.is_contract && (
-          <TabsContent value="contract">
+          <TabsContent value="contract" className="space-y-6">
             <ContractVerification address={address} />
+            <ContractInteraction address={address} />
           </TabsContent>
         )}
       </Tabs>

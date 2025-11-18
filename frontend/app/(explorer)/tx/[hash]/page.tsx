@@ -14,6 +14,7 @@ import { ErrorState } from '@/components/ui/error-state';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { InternalTransactionsTree } from '@/components/transactions/InternalTransactionsTree';
+import { TransactionDecoder } from '@/components/transactions/TransactionDecoder';
 import {
   formatTimeAgo,
   formatFullDate,
@@ -314,18 +315,12 @@ export default function TransactionDetailsPage({ params }: { params: { hash: str
             </Card>
           </div>
 
-          {/* Input Data */}
+          {/* Input Data / Transaction Decoder */}
           {tx.raw_input && tx.raw_input !== '0x' && (
-            <Card>
-              <CardHeader>
-                <CardTitle>Input Data</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <code className="block break-all rounded bg-muted p-4 font-mono text-xs">
-                  {tx.raw_input}
-                </code>
-              </CardContent>
-            </Card>
+            <TransactionDecoder
+              rawInput={tx.raw_input}
+              decodedInput={tx.decoded_input}
+            />
           )}
         </TabsContent>
 
