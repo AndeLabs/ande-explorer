@@ -26,6 +26,8 @@ class WebSocketClient {
 
     try {
       this.socket = io(config.api.wsUrl, {
+        // BlockScout uses Phoenix Channels at /socket path
+        path: '/socket/websocket',
         transports: ['websocket'],
         reconnection: true,
         reconnectionDelay: 1000,
@@ -33,9 +35,11 @@ class WebSocketClient {
         reconnectionAttempts: this.maxReconnectAttempts,
         timeout: 20000,
         // Performance optimizations
-        perMessageDeflate: true,
+        perMessageDeflate: false, // Phoenix doesn't use this
         pingInterval: 25000,
         pingTimeout: 60000,
+        // Force new connection
+        forceNew: true,
       });
 
       this.setupEventListeners();

@@ -18,7 +18,7 @@
     "NEXT_PUBLIC_HIDE_INDEXING_ALERT": "false",
     "NEXT_PUBLIC_DEFAULT_THEME": "dark",
     "NEXT_PUBLIC_RPC_URL": "https://rpc.ande.network",
-    "NEXT_PUBLIC_WS_URL": "wss://ws.ande.network",
+    "NEXT_PUBLIC_WS_URL": "wss://api.ande.network",
     "NEXT_PUBLIC_API_URL": "https://api.ande.network/api",
     "NEXT_PUBLIC_ENABLE_WEBSOCKETS": "true",
     "BACKEND_URL": "https://api.ande.network"
