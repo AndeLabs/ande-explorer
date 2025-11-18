@@ -5,7 +5,7 @@
 export type SearchType = 'transaction' | 'address' | 'block' | 'token' | 'unknown';
 
 /**
- * Validate Ethereum address
+ * Validate EVM address
  */
 export function isValidAddress(address: string): boolean {
   return /^0x[a-fA-F0-9]{40}$/.test(address);
