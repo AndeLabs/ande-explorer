@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ErrorState } from '@/components/ui/error-state';
 import { Button } from '@/components/ui/button';
+import { BlockRewards } from '@/components/blocks/BlockRewards';
 import {
   formatTimeAgo,
   formatFullDate,
@@ -144,16 +145,6 @@ export default function BlockDetailsPage({ params }: { params: { height: string 
                 {formatAddress(block.miner)}
               </Link>
             </div>
-
-            {/* Block Reward */}
-            {block.rewards && block.rewards.length > 0 && (
-              <div className="flex justify-between">
-                <span className="text-sm text-muted-foreground">Block Reward:</span>
-                <span className="font-mono font-medium">
-                  {formatWeiToEther(block.rewards[0].reward)} ANDE
-                </span>
-              </div>
-            )}
 
             {/* Size */}
             <div className="flex justify-between">
@@ -332,6 +323,11 @@ export default function BlockDetailsPage({ params }: { params: { height: string 
           )}
         </CardContent>
       </Card>
+
+      {/* Block Rewards */}
+      {block.rewards && block.rewards.length > 0 && (
+        <BlockRewards rewards={block.rewards} />
+      )}
     </div>
   );
 }
