@@ -15,8 +15,8 @@ export const config = {
 
   // API endpoints
   api: {
-    // BlockScout API base URL (includes /api/v2 prefix, client uses clean routes)
-    baseUrl: process.env.NEXT_PUBLIC_API_HOST || 'https://api.ande.network/api/v2',
+    // BlockScout API base URL - no version prefix
+    baseUrl: process.env.NEXT_PUBLIC_API_HOST || 'https://api.ande.network/api',
     wsUrl: process.env.NEXT_PUBLIC_WS_URL || 'wss://ws.ande.network',
     rpcUrl: process.env.NEXT_PUBLIC_RPC_URL || 'https://rpc.ande.network',
   },
