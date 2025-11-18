@@ -75,3 +75,15 @@ export function useAddressTokens(address: string) {
     staleTime: config.cache.address,
   });
 }
+
+/**
+ * Hook to fetch address counters (transactions, token transfers, gas usage)
+ */
+export function useAddressCounters(address: string) {
+  return useQuery({
+    queryKey: ['address-counters', address],
+    queryFn: () => api.getAddressCounters(address),
+    enabled: !!address && address.startsWith('0x') && address.length === 42,
+    staleTime: config.cache.address,
+  });
+}

@@ -7,6 +7,7 @@ import {
   useAddressBalance,
   useAddressTransactions,
   useAddressTokens,
+  useAddressCounters,
 } from '@/lib/hooks/useAddress';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -30,12 +31,15 @@ import {
   FileCode,
   Coins,
   ArrowRightLeft,
+  Zap,
+  Activity,
 } from 'lucide-react';
 
 export default function AddressPage({ params }: { params: { address: string } }) {
   const { address } = params;
   const { data: addressInfo, isLoading, error, refetch } = useAddress(address);
   const { data: balance } = useAddressBalance(address);
+  const { data: counters } = useAddressCounters(address);
   const [txPage, setTxPage] = useState(1);
   const { data: transactions } = useAddressTransactions(address, { page: txPage });
   const { data: tokens } = useAddressTokens(address);
@@ -178,14 +182,79 @@ export default function AddressPage({ params }: { params: { address: string } })
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {transactions?.items.length || 0}
+              {counters?.transactions_count ? parseInt(counters.transactions_count).toLocaleString() : (transactions?.items.length || 0)}
             </div>
             <div className="mt-1 text-sm text-muted-foreground">
-              Recent transactions
+              {counters?.transactions_count ? 'Total transactions' : 'Recent transactions'}
             </div>
           </CardContent>
         </Card>
       </div>
+
+      {/* Additional Stats - Gas & Token Transfers */}
+      {counters && (
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {/* Token Transfers Counter */}
+          {counters.token_transfers_count && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-base">
+                  <Activity className="h-5 w-5" />
+                  Token Transfers
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">
+                  {parseInt(counters.token_transfers_count).toLocaleString()}
+                </div>
+                <div className="mt-1 text-sm text-muted-foreground">
+                  Total token transfers
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Gas Usage */}
+          {counters.gas_usage_count && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-base">
+                  <Zap className="h-5 w-5" />
+                  Gas Usage
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">
+                  {parseInt(counters.gas_usage_count).toLocaleString()}
+                </div>
+                <div className="mt-1 text-sm text-muted-foreground">
+                  Total gas used
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Validations (if validator) */}
+          {counters.validations_count && parseInt(counters.validations_count) > 0 && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-base">
+                  <Check className="h-5 w-5" />
+                  Validations
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">
+                  {parseInt(counters.validations_count).toLocaleString()}
+                </div>
+                <div className="mt-1 text-sm text-muted-foreground">
+                  Blocks validated
+                </div>
+              </CardContent>
+            </Card>
+          )}
+        </div>
+      )}
 
       {/* Contract Info (if applicable) */}
       {addressInfo.is_contract && (

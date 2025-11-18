@@ -13,6 +13,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { ErrorState } from '@/components/ui/error-state';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import { InternalTransactionsTree } from '@/components/transactions/InternalTransactionsTree';
 import {
   formatTimeAgo,
   formatFullDate,
@@ -331,53 +332,7 @@ export default function TransactionDetailsPage({ params }: { params: { hash: str
         {/* Internal Transactions Tab */}
         {internalTxs && internalTxs.length > 0 && (
           <TabsContent value="internal">
-            <Card>
-              <CardHeader>
-                <CardTitle>Internal Transactions ({internalTxs.length})</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {internalTxs.map((itx, index) => (
-                    <div key={index} className="rounded-lg border p-4">
-                      <div className="flex items-center justify-between">
-                        <div className="space-y-2 text-sm">
-                          <div className="flex items-center gap-2">
-                            <span className="text-muted-foreground">From:</span>
-                            <Link
-                              href={`/address/${itx.from}`}
-                              className="font-mono text-blue-600 hover:underline"
-                            >
-                              {formatAddress(itx.from)}
-                            </Link>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <span className="text-muted-foreground">To:</span>
-                            {itx.to ? (
-                              <Link
-                                href={`/address/${itx.to}`}
-                                className="font-mono text-blue-600 hover:underline"
-                              >
-                                {formatAddress(itx.to)}
-                              </Link>
-                            ) : (
-                              <span className="italic text-muted-foreground">
-                                [Contract Creation]
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                        <div className="text-right">
-                          <div className="font-semibold">{formatWeiToEther(itx.value)} ANDE</div>
-                          <Badge variant="outline" className="mt-1">
-                            {itx.type}
-                          </Badge>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
+            <InternalTransactionsTree transactions={internalTxs} />
           </TabsContent>
         )}
 

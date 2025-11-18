@@ -91,6 +91,8 @@ export interface AddressInfo {
   ens_domain_name: string | null;
   creator_address_hash: Address | null;
   creation_tx_hash: Hash | null;
+  coin_balance: string;
+  exchange_rate: string | null;
   token: {
     name: string;
     symbol: string;
@@ -109,6 +111,14 @@ export interface AddressInfo {
 export interface AddressBalance {
   coin_balance: string;
   exchange_rate: string | null;
+}
+
+// Address counters type
+export interface AddressCounters {
+  transactions_count: string;
+  token_transfers_count: string;
+  gas_usage_count: string;
+  validations_count: string;
 }
 
 // Token transfer type
@@ -229,6 +239,14 @@ export interface GasTracker {
     time: number;
     base_fee: number;
   };
+}
+
+// Gas price history for charts
+export interface GasPriceHistory {
+  date: string;
+  slow: number;
+  average: number;
+  fast: number;
 }
 
 // Internal transaction type

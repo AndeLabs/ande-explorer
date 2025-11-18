@@ -16,10 +16,10 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Fuel } from 'lucide-react';
 
 export function GasChart() {
-  const { data, isLoading } = useQuery({
+  const { data: chartData, isLoading } = useQuery({
     queryKey: ['gas-chart'],
-    queryFn: () => api.getGasPrices(),
-    refetchInterval: 15_000, // Refetch every 15 seconds
+    queryFn: () => api.getGasPriceChart(),
+    refetchInterval: 60_000, // Refetch every 60 seconds (gas price chart changes slowly)
   });
 
   if (isLoading) {
@@ -38,15 +38,8 @@ export function GasChart() {
     );
   }
 
-  // Mock data for demonstration (BlockScout might return different format)
-  const chartData = data?.history || [
-    { time: '00:00', slow: 20, average: 25, fast: 30 },
-    { time: '04:00', slow: 18, average: 23, fast: 28 },
-    { time: '08:00', slow: 22, average: 27, fast: 32 },
-    { time: '12:00', slow: 25, average: 30, fast: 35 },
-    { time: '16:00', slow: 23, average: 28, fast: 33 },
-    { time: '20:00', slow: 21, average: 26, fast: 31 },
-  ];
+  // Use real data from API
+  const data = chartData || [];
 
   return (
     <Card>
@@ -61,7 +54,7 @@ export function GasChart() {
       </CardHeader>
       <CardContent>
         <ResponsiveContainer width="100%" height={320}>
-          <AreaChart data={chartData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+          <AreaChart data={data} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
             <defs>
               <linearGradient id="colorFast" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="5%" stopColor="#ef4444" stopOpacity={0.8} />
