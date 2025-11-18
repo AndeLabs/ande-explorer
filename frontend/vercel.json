@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "name": "ande-explorer-frontend",
+  "name": "ande-explorer",
   "framework": "nextjs",
   "env": {
     "NEXT_PUBLIC_API_HOST": "https://api.ande.network",
