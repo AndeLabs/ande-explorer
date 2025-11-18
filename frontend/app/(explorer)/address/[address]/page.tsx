@@ -18,6 +18,7 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { TransactionCard } from '@/components/transactions/TransactionCard';
 import { Pagination } from '@/components/ui/pagination';
+import { ContractVerification } from '@/components/contracts/ContractVerification';
 import {
   formatWeiToEther,
   copyToClipboard,
@@ -310,6 +311,12 @@ export default function AddressPage({ params }: { params: { address: string } })
               Tokens ({tokens.items.length})
             </TabsTrigger>
           )}
+          {addressInfo.is_contract && (
+            <TabsTrigger value="contract" className="flex items-center gap-2">
+              <FileCode className="h-4 w-4" />
+              Contract
+            </TabsTrigger>
+          )}
         </TabsList>
 
         {/* Transactions Tab */}
@@ -380,6 +387,13 @@ export default function AddressPage({ params }: { params: { address: string } })
                 </div>
               </CardContent>
             </Card>
+          </TabsContent>
+        )}
+
+        {/* Contract Tab */}
+        {addressInfo.is_contract && (
+          <TabsContent value="contract">
+            <ContractVerification address={address} />
           </TabsContent>
         )}
       </Tabs>
