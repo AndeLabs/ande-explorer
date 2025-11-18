@@ -1,6 +1,6 @@
 'use client';
 
-import { use, useState } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
 import {
   useAddress,
@@ -32,8 +32,8 @@ import {
   ArrowRightLeft,
 } from 'lucide-react';
 
-export default function AddressPage({ params }: { params: Promise<{ address: string }> }) {
-  const { address } = use(params);
+export default function AddressPage({ params }: { params: { address: string } }) {
+  const { address } = params;
   const { data: addressInfo, isLoading, error, refetch } = useAddress(address);
   const { data: balance } = useAddressBalance(address);
   const [txPage, setTxPage] = useState(1);

@@ -1,6 +1,6 @@
 'use client';
 
-import { use, useState } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
 import {
   useTransaction,
@@ -31,8 +31,8 @@ import {
   Hash,
 } from 'lucide-react';
 
-export default function TransactionDetailsPage({ params }: { params: Promise<{ hash: string }> }) {
-  const { hash } = use(params);
+export default function TransactionDetailsPage({ params }: { params: { hash: string } }) {
+  const { hash } = params;
   const { data: tx, isLoading, error, refetch } = useTransaction(hash);
   const { data: internalTxs } = useInternalTransactions(hash);
   const { data: logs } = useTransactionLogs(hash);

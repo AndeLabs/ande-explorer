@@ -1,6 +1,6 @@
 'use client';
 
-import { use, useState } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
 import { useToken, useTokenHolders, useTokenTransfers } from '@/lib/hooks/useTokens';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -19,8 +19,8 @@ import {
 import { Coins, Users, ArrowRightLeft, Copy, Check, TrendingUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
-export default function TokenDetailsPage({ params }: { params: Promise<{ address: string }> }) {
-  const { address } = use(params);
+export default function TokenDetailsPage({ params }: { params: { address: string } }) {
+  const { address } = params;
   const { data: token, isLoading, error, refetch } = useToken(address);
   const [holdersPage, setHoldersPage] = useState(1);
   const [transfersPage, setTransfersPage] = useState(1);

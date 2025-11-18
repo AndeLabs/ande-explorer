@@ -1,6 +1,6 @@
 'use client';
 
-import { use } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
 import { useBlock } from '@/lib/hooks/useBlocks';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -29,10 +29,9 @@ import {
   Copy,
   Check,
 } from 'lucide-react';
-import { useState } from 'react';
 
-export default function BlockDetailsPage({ params }: { params: Promise<{ height: string }> }) {
-  const { height } = use(params);
+export default function BlockDetailsPage({ params }: { params: { height: string } }) {
+  const { height } = params;
   const { data: block, isLoading, error, refetch } = useBlock(height);
   const [copiedField, setCopiedField] = useState<string | null>(null);
 
