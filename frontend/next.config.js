@@ -10,8 +10,26 @@ const nextConfig = {
 
   // Image optimization
   images: {
-    domains: ['explorer.ande.chain', 'explorer-advanced.ande.chain'],
+    // Use remotePatterns instead of deprecated domains
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'explorer.ande.network',
+      },
+      {
+        protocol: 'https',
+        hostname: 'api.ande.network',
+      },
+      {
+        protocol: 'https',
+        hostname: '**.ande.network',
+      },
+    ],
     formats: ['image/avif', 'image/webp'],
+    // Optimize for Vercel deployment
+    minimumCacheTTL: 60,
+    dangerouslyAllowSVG: true,
+    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
   },
 
   // Headers for security

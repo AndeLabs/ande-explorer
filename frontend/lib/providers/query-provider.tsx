@@ -10,16 +10,32 @@ export function QueryProvider({ children }: { children: React.ReactNode }) {
       new QueryClient({
         defaultOptions: {
           queries: {
-            // PERFORMANCE OPTIMIZATIONS
-            staleTime: 5 * 60_000, // 5 minutos - datos blockchain cambian lento
-            gcTime: 10 * 60_000, // 10 minutos - mantener en memoria
-            refetchOnWindowFocus: false, // No refetch al cambiar de ventana
-            refetchOnMount: false, // No refetch al montar (usa cache)
-            refetchOnReconnect: false, // No refetch al reconectar
-            retry: 1, // Solo 1 retry (más rápido failure)
-            retryDelay: 1000, // 1 segundo entre retries
+            // PERFORMANCE OPTIMIZATIONS FOR BLOCKCHAIN EXPLORER
+            staleTime: 30_000, // 30 seconds - balance between fresh data and performance
+            gcTime: 10 * 60_000, // 10 minutes - keep in memory for navigation
+
+            // Refetch strategies
+            refetchOnWindowFocus: false, // No refetch on window focus (use WebSocket for updates)
+            refetchOnMount: 'always', // Always check cache on mount
+            refetchOnReconnect: true, // Refetch when reconnecting (data might be stale)
+
+            // Retry configuration
+            retry: 2, // 2 retries for network resilience
+            retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 5000), // Exponential backoff
+
             // Network mode
-            networkMode: 'online', // Solo queries cuando hay internet
+            networkMode: 'online',
+
+            // Structural sharing for better performance
+            structuralSharing: true,
+
+            // Refetch interval for real-time feel (fallback when WebSocket fails)
+            refetchInterval: false, // Disabled by default, enable per-query as needed
+          },
+          mutations: {
+            // Mutation defaults
+            retry: 1,
+            networkMode: 'online',
           },
         },
       })
@@ -28,7 +44,9 @@ export function QueryProvider({ children }: { children: React.ReactNode }) {
   return (
     <QueryClientProvider client={queryClient}>
       {children}
-      <ReactQueryDevtools initialIsOpen={false} position="bottom" />
+      {process.env.NODE_ENV === 'development' && (
+        <ReactQueryDevtools initialIsOpen={false} position="bottom" />
+      )}
     </QueryClientProvider>
   );
 }
