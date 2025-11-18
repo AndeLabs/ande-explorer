@@ -7,6 +7,8 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { EmptyState } from '@/components/ui/empty-state';
 import { ErrorState } from '@/components/ui/error-state';
 import { Pagination } from '@/components/ui/pagination';
+import { ExportButton } from '@/components/ui/export-button';
+import { transactionsToCSV, downloadCSV, generateFilename } from '@/lib/utils/export';
 import { ArrowRightLeft } from 'lucide-react';
 
 export default function TransactionsPage() {
@@ -65,6 +67,14 @@ export default function TransactionsPage() {
             Latest transactions on the {process.env.NEXT_PUBLIC_CHAIN_NAME} blockchain
           </p>
         </div>
+        <ExportButton
+          onExport={() => {
+            const csv = transactionsToCSV(data.items);
+            const filename = generateFilename('transactions');
+            downloadCSV(csv, filename);
+          }}
+          disabled={!data || data.items.length === 0}
+        />
       </div>
 
       {/* Transactions List */}

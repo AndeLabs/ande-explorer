@@ -16,6 +16,7 @@ const navigation = [
   { name: 'Transactions', href: '/tx' },
   { name: 'Tokens', href: '/tokens' },
   { name: 'Analytics', href: '/analytics' },
+  { name: 'API', href: '/api-docs' },
 ];
 
 export function Header() {

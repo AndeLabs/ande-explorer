@@ -21,10 +21,13 @@ import { Pagination } from '@/components/ui/pagination';
 import { ContractVerification } from '@/components/contracts/ContractVerification';
 import { ContractInteraction } from '@/components/contracts/ContractInteraction';
 import { NFTGallery } from '@/components/nft/NFTGallery';
+import { AddressTag } from '@/components/address/AddressTag';
 import {
   formatWeiToEther,
   copyToClipboard,
 } from '@/lib/utils/format';
+import { transactionsToCSV, downloadCSV, generateFilename } from '@/lib/utils/export';
+import { ExportButton } from '@/components/ui/export-button';
 import {
   ArrowLeft,
   Copy,
@@ -122,6 +125,9 @@ export default function AddressPage({ params }: { params: { address: string } })
           {addressInfo.name && (
             <div className="mt-1 text-lg font-medium text-blue-600">{addressInfo.name}</div>
           )}
+          <div className="mt-2">
+            <AddressTag address={address} />
+          </div>
         </div>
         <div className="flex flex-wrap gap-2">
           {addressInfo.is_contract && (
@@ -330,6 +336,15 @@ export default function AddressPage({ params }: { params: { address: string } })
         <TabsContent value="transactions" className="space-y-4">
           {transactions && transactions.items.length > 0 ? (
             <>
+              <div className="flex justify-end">
+                <ExportButton
+                  onExport={() => {
+                    const csv = transactionsToCSV(transactions.items);
+                    const filename = generateFilename(`address_${address.slice(0, 8)}_transactions`);
+                    downloadCSV(csv, filename);
+                  }}
+                />
+              </div>
               <div className="space-y-4">
                 {transactions.items.map((tx) => (
                   <TransactionCard key={tx.hash} tx={tx} showBlock />
