@@ -1,9 +1,11 @@
 /**
  * React hooks for WebSocket functionality
+ * Now with initial data loading via REST API for robustness
  */
 
 import { useEffect, useState } from 'react';
 import { wsClient, WS_EVENTS } from '@/lib/websocket/client';
+import { api } from '@/lib/api/client';
 import type { Block, Transaction } from '@/lib/types';
 
 /**
@@ -37,12 +39,35 @@ export function useWebSocketStatus() {
 
 /**
  * Hook to receive real-time blocks
+ * Fetches initial data via API, then updates via WebSocket
  * @param limit Maximum number of blocks to keep
  */
 export function useRealtimeBlocks(limit = 10) {
   const [blocks, setBlocks] = useState<Block[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [hasInitialData, setHasInitialData] = useState(false);
   const status = useWebSocketStatus();
 
+  // Fetch initial data via REST API
+  useEffect(() => {
+    const fetchInitialBlocks = async () => {
+      try {
+        const response = await api.getBlocks(1);
+        if (response.items && response.items.length > 0) {
+          setBlocks(response.items.slice(0, limit));
+          setHasInitialData(true);
+        }
+      } catch (error) {
+        console.error('Failed to fetch initial blocks:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchInitialBlocks();
+  }, [limit]);
+
+  // Subscribe to WebSocket for real-time updates
   useEffect(() => {
     if (status !== 'connected') return;
 
@@ -56,17 +81,45 @@ export function useRealtimeBlocks(limit = 10) {
     return unsubscribe;
   }, [status, limit]);
 
-  return { blocks, isConnected: status === 'connected' };
+  // Consider connected if we have initial data (even without WebSocket)
+  return {
+    blocks,
+    isConnected: hasInitialData || status === 'connected',
+    isLoading
+  };
 }
 
 /**
  * Hook to receive real-time transactions
+ * Fetches initial data via API, then updates via WebSocket
  * @param limit Maximum number of transactions to keep
  */
 export function useRealtimeTransactions(limit = 20) {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [hasInitialData, setHasInitialData] = useState(false);
   const status = useWebSocketStatus();
 
+  // Fetch initial data via REST API
+  useEffect(() => {
+    const fetchInitialTransactions = async () => {
+      try {
+        const response = await api.getTransactions(1);
+        if (response.items && response.items.length > 0) {
+          setTransactions(response.items.slice(0, limit));
+          setHasInitialData(true);
+        }
+      } catch (error) {
+        console.error('Failed to fetch initial transactions:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchInitialTransactions();
+  }, [limit]);
+
+  // Subscribe to WebSocket for real-time updates
   useEffect(() => {
     if (status !== 'connected') return;
 
@@ -80,7 +133,12 @@ export function useRealtimeTransactions(limit = 20) {
     return unsubscribe;
   }, [status, limit]);
 
-  return { transactions, isConnected: status === 'connected' };
+  // Consider connected if we have initial data (even without WebSocket)
+  return {
+    transactions,
+    isConnected: hasInitialData || status === 'connected',
+    isLoading
+  };
 }
 
 /**
