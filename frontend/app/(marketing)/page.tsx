@@ -1,5 +1,6 @@
 import { Hero } from '@/components/marketing/Hero';
 import { StatsGrid } from '@/components/stats/StatsGrid';
+import { RealtimeFeed } from '@/components/realtime/RealtimeFeed';
 import Link from 'next/link';
 import { ArrowRight, Zap, Shield, BarChart3, Code, Coins, Image } from 'lucide-react';
 import { Card } from '@/components/ui/card';
@@ -10,6 +11,9 @@ export default function HomePage() {
       <Hero />
 
       <StatsGrid />
+
+      {/* Real-time Feed */}
+      <RealtimeFeed />
 
       {/* Features Section */}
       <section className="bg-muted/40 py-16">
