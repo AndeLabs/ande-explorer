@@ -77,21 +77,21 @@ class BlockScoutAPI {
    * Get latest block
    */
   async getLatestBlock(): Promise<Block> {
-    return this.client.get('/v2/blocks/latest');
+    return this.client.get('/blocks/latest');
   }
 
   /**
    * Get block by height or hash
    */
   async getBlock(heightOrHash: string | number): Promise<Block> {
-    return this.client.get(`/v2/blocks/${heightOrHash}`);
+    return this.client.get(`/blocks/${heightOrHash}`);
   }
 
   /**
    * Get list of blocks
    */
   async getBlocks(page = 1): Promise<PaginatedResponse<Block>> {
-    return this.client.get('/v2/blocks', {
+    return this.client.get('/blocks', {
       params: { page },
     });
   }
@@ -102,14 +102,14 @@ class BlockScoutAPI {
    * Get transaction by hash
    */
   async getTransaction(hash: string): Promise<Transaction> {
-    return this.client.get(`/v2/transactions/${hash}`);
+    return this.client.get(`/transactions/${hash}`);
   }
 
   /**
    * Get list of transactions
    */
   async getTransactions(page = 1): Promise<PaginatedResponse<Transaction>> {
-    return this.client.get('/v2/transactions', {
+    return this.client.get('/transactions', {
       params: { page },
     });
   }
@@ -124,7 +124,7 @@ class BlockScoutAPI {
       filter?: 'to' | 'from';
     }
   ): Promise<PaginatedResponse<Transaction>> {
-    return this.client.get(`/v2/addresses/${address}/transactions`, {
+    return this.client.get(`/addresses/${address}/transactions`, {
       params,
     });
   }
@@ -133,14 +133,14 @@ class BlockScoutAPI {
    * Get internal transactions for a transaction
    */
   async getInternalTransactions(hash: string): Promise<InternalTransaction[]> {
-    return this.client.get(`/v2/transactions/${hash}/internal-transactions`);
+    return this.client.get(`/transactions/${hash}/internal-transactions`);
   }
 
   /**
    * Get logs for a transaction
    */
   async getTransactionLogs(hash: string): Promise<Log[]> {
-    return this.client.get(`/v2/transactions/${hash}/logs`);
+    return this.client.get(`/transactions/${hash}/logs`);
   }
 
   // ==================== ADDRESSES ====================
@@ -149,7 +149,7 @@ class BlockScoutAPI {
    * Get address info
    */
   async getAddress(address: string): Promise<AddressInfo> {
-    return this.client.get(`/v2/addresses/${address}`);
+    return this.client.get(`/addresses/${address}`);
   }
 
   /**
@@ -167,7 +167,7 @@ class BlockScoutAPI {
    * Get address counters (transactions, token transfers, gas usage)
    */
   async getAddressCounters(address: string): Promise<any> {
-    return this.client.get(`/v2/addresses/${address}/counters`);
+    return this.client.get(`/addresses/${address}/counters`);
   }
 
   /**
@@ -180,7 +180,7 @@ class BlockScoutAPI {
       type?: string[];
     }
   ): Promise<PaginatedResponse<TokenTransfer>> {
-    return this.client.get(`/v2/addresses/${address}/token-transfers`, {
+    return this.client.get(`/addresses/${address}/token-transfers`, {
       params,
     });
   }
@@ -189,7 +189,7 @@ class BlockScoutAPI {
    * Get tokens for an address
    */
   async getAddressTokens(address: string): Promise<PaginatedResponse<Token>> {
-    return this.client.get(`/v2/addresses/${address}/tokens`);
+    return this.client.get(`/addresses/${address}/tokens`);
   }
 
   // ==================== TOKENS ====================
@@ -198,7 +198,7 @@ class BlockScoutAPI {
    * Get token info
    */
   async getToken(address: string): Promise<Token> {
-    return this.client.get(`/v2/tokens/${address}`);
+    return this.client.get(`/tokens/${address}`);
   }
 
   /**
@@ -208,7 +208,7 @@ class BlockScoutAPI {
     page?: number;
     type?: string;
   }): Promise<PaginatedResponse<Token>> {
-    return this.client.get('/v2/tokens', { params });
+    return this.client.get('/tokens', { params });
   }
 
   /**
@@ -218,14 +218,14 @@ class BlockScoutAPI {
     address: string,
     params?: { page?: number }
   ): Promise<PaginatedResponse<TokenTransfer>> {
-    return this.client.get(`/v2/tokens/${address}/transfers`, { params });
+    return this.client.get(`/tokens/${address}/transfers`, { params });
   }
 
   /**
    * Get token holders
    */
   async getTokenHolders(address: string, params?: { page?: number }) {
-    return this.client.get(`/v2/tokens/${address}/holders`, { params });
+    return this.client.get(`/tokens/${address}/holders`, { params });
   }
 
   // ==================== STATS ====================
@@ -234,21 +234,21 @@ class BlockScoutAPI {
    * Get network stats
    */
   async getNetworkStats(): Promise<NetworkStats> {
-    return this.client.get('/v2/stats');
+    return this.client.get('/stats');
   }
 
   /**
    * Get transaction stats
    */
   async getTransactionStats(): Promise<any> {
-    return this.client.get('/v2/stats/charts/transactions');
+    return this.client.get('/stats/charts/transactions');
   }
 
   /**
    * Get market chart data
    */
   async getMarketChart(period: 'all' | '1y' | '6m' | '3m' | '1m' = '1m'): Promise<any> {
-    return this.client.get('/v2/stats/charts/market', {
+    return this.client.get('/stats/charts/market', {
       params: { period },
     });
   }
@@ -259,7 +259,7 @@ class BlockScoutAPI {
    * Search by query
    */
   async search(query: string): Promise<SearchResult> {
-    return this.client.get('/v2/search', {
+    return this.client.get('/search', {
       params: { q: query },
     });
   }
@@ -268,7 +268,7 @@ class BlockScoutAPI {
    * Quick search (for autocomplete)
    */
   async quickSearch(query: string): Promise<SearchResult[]> {
-    return this.client.get('/v2/search/quick', {
+    return this.client.get('/search/quick', {
       params: { q: query },
     });
   }
@@ -279,14 +279,14 @@ class BlockScoutAPI {
    * Get contract info
    */
   async getContract(address: string): Promise<Contract> {
-    return this.client.get(`/v2/smart-contracts/${address}`);
+    return this.client.get(`/smart-contracts/${address}`);
   }
 
   /**
    * Read contract method
    */
   async readContract(address: string, method: string, args: any[] = []): Promise<any> {
-    return this.client.post(`/v2/smart-contracts/${address}/methods-read`, {
+    return this.client.post(`/smart-contracts/${address}/methods-read`, {
       method,
       args,
     });
@@ -309,7 +309,7 @@ class BlockScoutAPI {
   async getGasPriceChart(): Promise<any> {
     try {
       // Try to get from stats charts endpoint
-      return await this.client.get('/v2/stats/charts/gas-price');
+      return await this.client.get('/stats/charts/gas-price');
     } catch (error) {
       // Fallback: generate from current gas prices
       const stats = await this.getNetworkStats();

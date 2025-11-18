@@ -1,5 +1,4 @@
 /** @type {import('next').NextConfig} */
-// Build: 2025-11-18T20:00:00Z - Force fresh deployment with env vars
 const nextConfig = {
   reactStrictMode: true,
 
