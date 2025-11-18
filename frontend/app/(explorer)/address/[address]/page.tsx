@@ -140,7 +140,7 @@ export default function AddressPage({ params }: { params: Promise<{ address: str
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {balance ? formatWeiToEther(balance.coin_balance) : '0'} ETH
+              {balance ? formatWeiToEther(balance.coin_balance) : '0'} ANDE
             </div>
             {balance?.exchange_rate && (
               <div className="mt-1 text-sm text-muted-foreground">

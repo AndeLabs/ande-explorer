@@ -258,14 +258,14 @@ export default function TransactionDetailsPage({ params }: { params: Promise<{ h
               <CardContent className="space-y-4">
                 <div className="flex justify-between">
                   <span className="text-sm text-muted-foreground">Amount:</span>
-                  <span className="text-xl font-bold">{formatWeiToEther(tx.value)} ETH</span>
+                  <span className="text-xl font-bold">{formatWeiToEther(tx.value)} ANDE</span>
                 </div>
 
                 {/* Transaction Fee */}
                 {tx.fee && (
                   <div className="flex justify-between">
                     <span className="text-sm text-muted-foreground">Transaction Fee:</span>
-                    <span className="font-mono">{formatWeiToEther(tx.fee.value)} ETH</span>
+                    <span className="font-mono">{formatWeiToEther(tx.fee.value)} ANDE</span>
                   </div>
                 )}
               </CardContent>
@@ -367,7 +367,7 @@ export default function TransactionDetailsPage({ params }: { params: Promise<{ h
                           </div>
                         </div>
                         <div className="text-right">
-                          <div className="font-semibold">{formatWeiToEther(itx.value)} ETH</div>
+                          <div className="font-semibold">{formatWeiToEther(itx.value)} ANDE</div>
                           <Badge variant="outline" className="mt-1">
                             {itx.type}
                           </Badge>

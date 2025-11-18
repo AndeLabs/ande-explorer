@@ -2,7 +2,7 @@ import { formatEther, formatGwei, parseEther } from 'viem';
 import { formatDistanceToNow, format as formatDate } from 'date-fns';
 
 /**
- * Format wei to ETH with specified decimals
+ * Format wei to ANDE with specified decimals
  */
 export function formatWeiToEther(wei: string | bigint, decimals = 4): string {
   try {
@@ -26,11 +26,17 @@ export function formatWeiToGwei(wei: string | bigint): string {
 }
 
 /**
- * Format large numbers with K, M, B suffixes
+ * Format large numbers with optional K, M, B suffixes
  */
-export function formatNumber(num: number | string): string {
+export function formatNumber(num: number | string, useShortFormat = false): string {
   const value = typeof num === 'string' ? parseFloat(num) : num;
 
+  if (!useShortFormat) {
+    // Return full number with thousand separators
+    return value.toLocaleString();
+  }
+
+  // Use short format with suffixes (only when explicitly requested)
   if (value >= 1_000_000_000) {
     return (value / 1_000_000_000).toFixed(2) + 'B';
   }
@@ -44,12 +50,23 @@ export function formatNumber(num: number | string): string {
 }
 
 /**
+ * Extract address string from BlockScout address object or string
+ */
+export function extractAddress(address: string | { hash: string } | null | undefined): string {
+  if (!address) return '';
+  if (typeof address === 'string') return address;
+  if (typeof address === 'object' && 'hash' in address) return address.hash;
+  return '';
+}
+
+/**
  * Format address to shortened version
  */
-export function formatAddress(address: string | null | undefined, startChars = 6, endChars = 4): string {
-  if (!address || typeof address !== 'string') return '';
-  if (address.length <= startChars + endChars) return address;
-  return `${address.slice(0, startChars)}...${address.slice(-endChars)}`;
+export function formatAddress(address: string | { hash: string } | null | undefined, startChars = 6, endChars = 4): string {
+  const addr = extractAddress(address);
+  if (!addr) return '';
+  if (addr.length <= startChars + endChars) return addr;
+  return `${addr.slice(0, startChars)}...${addr.slice(-endChars)}`;
 }
 
 /**

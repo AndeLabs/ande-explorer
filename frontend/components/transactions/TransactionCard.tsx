@@ -104,14 +104,14 @@ export function TransactionCard({
           <div className="flex items-center gap-1">
             <Coins className="h-4 w-4 text-muted-foreground" />
             <span className="text-lg font-semibold">
-              {formatWeiToEther(tx.value)} ETH
+              {formatWeiToEther(tx.value)} ANDE
             </span>
           </div>
 
           {/* Fee */}
           {tx.fee && (
             <div className="text-xs text-muted-foreground">
-              Fee: {formatWeiToEther(tx.fee.value)} ETH
+              Fee: {formatWeiToEther(tx.fee.value)} ANDE
             </div>
           )}
 

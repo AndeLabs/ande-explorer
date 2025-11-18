@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { formatTimeAgo, formatNumber, formatAddress } from '@/lib/utils/format';
+import { formatTimeAgo, formatNumber, formatAddress, extractAddress } from '@/lib/utils/format';
 import { config } from '@/lib/config';
 import type { Block } from '@/lib/types';
 import { Package, Clock, Zap } from 'lucide-react';
@@ -41,7 +41,7 @@ export function BlockCard({ block, isNew, className = '' }: BlockCardProps) {
             <div className="flex items-start gap-2">
               <span className="text-muted-foreground">Miner:</span>
               <Link
-                href={`/address/${block.miner}`}
+                href={`/address/${extractAddress(block.miner)}`}
                 prefetch={true}
                 className="font-mono text-blue-600 hover:underline"
               >

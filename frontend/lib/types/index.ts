@@ -16,7 +16,12 @@ export interface Block {
   timestamp: string;
   hash: Hash;
   parent_hash: Hash;
-  miner: Address;
+  miner: {
+    hash: Address;
+    name: string | null;
+    is_contract: boolean;
+    is_verified: boolean | null;
+  } | Address; // Support both BlockScout object format and simple address string
   size: number;
   gas_used: string;
   gas_limit: string;

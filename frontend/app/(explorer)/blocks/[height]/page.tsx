@@ -13,6 +13,7 @@ import {
   formatFullDate,
   formatNumber,
   formatAddress,
+  extractAddress,
   formatWeiToEther,
   formatWeiToGwei,
   copyToClipboard,
@@ -138,7 +139,7 @@ export default function BlockDetailsPage({ params }: { params: Promise<{ height:
             <div className="flex justify-between">
               <span className="text-sm text-muted-foreground">Miner:</span>
               <Link
-                href={`/address/${block.miner}`}
+                href={`/address/${extractAddress(block.miner)}`}
                 className="font-mono text-sm text-blue-600 hover:underline"
               >
                 {formatAddress(block.miner)}
@@ -150,7 +151,7 @@ export default function BlockDetailsPage({ params }: { params: Promise<{ height:
               <div className="flex justify-between">
                 <span className="text-sm text-muted-foreground">Block Reward:</span>
                 <span className="font-mono font-medium">
-                  {formatWeiToEther(block.rewards[0].reward)} ETH
+                  {formatWeiToEther(block.rewards[0].reward)} ANDE
                 </span>
               </div>
             )}
@@ -219,7 +220,7 @@ export default function BlockDetailsPage({ params }: { params: Promise<{ height:
               <div className="flex justify-between">
                 <span className="text-sm text-muted-foreground">Burnt Fees:</span>
                 <span className="font-mono text-orange-600">
-                  🔥 {formatWeiToEther(block.burnt_fees)} ETH
+                  🔥 {formatWeiToEther(block.burnt_fees)} ANDE
                 </span>
               </div>
             )}
