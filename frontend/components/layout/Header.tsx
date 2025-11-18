@@ -2,13 +2,14 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { Search, Moon, Sun, Menu } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils/cn';
 import { config } from '@/lib/config';
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
+import { api } from '@/lib/api/client';
 
 const navigation = [
   { name: 'Home', href: '/' },
@@ -18,6 +19,28 @@ const navigation = [
   { name: 'Analytics', href: '/analytics' },
   { name: 'API', href: '/api-docs' },
 ];
+
+// Prefetch data for routes on hover
+const prefetchRoute = (href: string) => {
+  switch (href) {
+    case '/':
+      api.prefetch('stats', () => api.getNetworkStats(), 5000);
+      break;
+    case '/blocks':
+      api.prefetchBlocks(1);
+      break;
+    case '/tx':
+      api.prefetchTransactions(1);
+      break;
+    case '/tokens':
+      api.prefetch('tokens?{}', () => api.getTokens(), 30000);
+      break;
+    case '/analytics':
+      api.prefetch('stats', () => api.getNetworkStats(), 5000);
+      api.prefetch('stats/charts/transactions', () => api.getTransactionStats(), 60000);
+      break;
+  }
+};
 
 export function Header() {
   const pathname = usePathname();
@@ -46,6 +69,9 @@ export function Header() {
             <Link
               key={item.name}
               href={item.href}
+              prefetch={true}
+              onMouseEnter={() => prefetchRoute(item.href)}
+              onFocus={() => prefetchRoute(item.href)}
               className={cn(
                 'text-sm font-medium transition-colors hover:text-primary',
                 pathname === item.href
@@ -92,6 +118,8 @@ export function Header() {
               <Link
                 key={item.name}
                 href={item.href}
+                prefetch={true}
+                onTouchStart={() => prefetchRoute(item.href)}
                 className={cn(
                   'block rounded-md px-3 py-2 text-base font-medium transition-colors',
                   pathname === item.href

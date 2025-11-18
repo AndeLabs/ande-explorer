@@ -1,9 +1,9 @@
 /**
- * BlockScout API Client
- * Handles all API communication with BlockScout backend
+ * BlockScout API Client - Ultra Performance Edition
+ * Optimized for Sonic-like speed with request deduplication, caching, and prefetching
  */
 
-import axios, { AxiosInstance, AxiosError } from 'axios';
+import axios, { AxiosInstance, AxiosError, AxiosRequestConfig } from 'axios';
 import { config } from '@/lib/config';
 import type {
   Block,
@@ -32,30 +32,45 @@ export class APIError extends Error {
   }
 }
 
+// Request deduplication cache
+interface PendingRequest {
+  promise: Promise<any>;
+  timestamp: number;
+}
+
 class BlockScoutAPI {
   private client: AxiosInstance;
+  private pendingRequests: Map<string, PendingRequest> = new Map();
+  private cache: Map<string, { data: any; timestamp: number; ttl: number }> = new Map();
+  private readonly DEDUP_WINDOW = 100; // ms - deduplicate requests within this window
 
   constructor(baseURL: string) {
     this.client = axios.create({
       baseURL,
-      timeout: 10000, // 10 segundos (antes: 30s) - fail fast
+      timeout: 5000, // 5 seconds - fail fast for better UX
       headers: {
         'Content-Type': 'application/json',
-        // Note: Accept-Encoding is set automatically by browsers
       },
     });
 
-    // Request interceptor
+    // Request interceptor with timing
     this.client.interceptors.request.use(
       (config) => {
+        (config as any).metadata = { startTime: performance.now() };
         return config;
       },
       (error) => Promise.reject(error)
     );
 
-    // Response interceptor
+    // Response interceptor with timing
     this.client.interceptors.response.use(
-      (response) => response.data,
+      (response) => {
+        const duration = performance.now() - (response.config as any).metadata.startTime;
+        if (duration > 1000) {
+          console.warn(`Slow API call: ${response.config.url} took ${duration.toFixed(0)}ms`);
+        }
+        return response.data;
+      },
       (error: AxiosError) => {
         if (error.response) {
           throw new APIError(
@@ -69,54 +84,140 @@ class BlockScoutAPI {
         throw new APIError(500, error.message || 'Network error');
       }
     );
+
+    // Cleanup old cache entries every minute
+    setInterval(() => this.cleanupCache(), 60000);
+  }
+
+  /**
+   * Deduplicate concurrent requests to the same endpoint
+   */
+  private async deduplicatedRequest<T>(
+    key: string,
+    requestFn: () => Promise<T>,
+    cacheTTL?: number
+  ): Promise<T> {
+    // Check cache first
+    if (cacheTTL) {
+      const cached = this.cache.get(key);
+      if (cached && Date.now() - cached.timestamp < cached.ttl) {
+        return cached.data as T;
+      }
+    }
+
+    // Check for pending request
+    const pending = this.pendingRequests.get(key);
+    if (pending && Date.now() - pending.timestamp < this.DEDUP_WINDOW) {
+      return pending.promise as Promise<T>;
+    }
+
+    // Create new request
+    const promise = requestFn().then((data) => {
+      // Cache the result
+      if (cacheTTL) {
+        this.cache.set(key, { data, timestamp: Date.now(), ttl: cacheTTL });
+      }
+      // Clean up pending request
+      this.pendingRequests.delete(key);
+      return data;
+    }).catch((error) => {
+      this.pendingRequests.delete(key);
+      throw error;
+    });
+
+    this.pendingRequests.set(key, { promise, timestamp: Date.now() });
+    return promise;
+  }
+
+  private cleanupCache() {
+    const now = Date.now();
+    for (const [key, value] of this.cache.entries()) {
+      if (now - value.timestamp > value.ttl) {
+        this.cache.delete(key);
+      }
+    }
+  }
+
+  /**
+   * Prefetch data in background (doesn't block UI)
+   */
+  prefetch(key: string, requestFn: () => Promise<any>, ttl: number = 30000) {
+    if (typeof window === 'undefined') return;
+
+    // Use requestIdleCallback for non-blocking prefetch
+    if ('requestIdleCallback' in window) {
+      (window as any).requestIdleCallback(() => {
+        this.deduplicatedRequest(key, requestFn, ttl).catch(() => {});
+      });
+    } else {
+      setTimeout(() => {
+        this.deduplicatedRequest(key, requestFn, ttl).catch(() => {});
+      }, 0);
+    }
   }
 
   // ==================== BLOCKS ====================
 
-  /**
-   * Get latest block
-   */
   async getLatestBlock(): Promise<Block> {
-    return this.client.get('/blocks/latest');
+    return this.deduplicatedRequest(
+      'blocks/latest',
+      () => this.client.get('/blocks/latest'),
+      5000 // 5s cache - blocks are created every ~5s
+    );
   }
 
-  /**
-   * Get block by height or hash
-   */
   async getBlock(heightOrHash: string | number): Promise<Block> {
-    return this.client.get(`/blocks/${heightOrHash}`);
+    return this.deduplicatedRequest(
+      `blocks/${heightOrHash}`,
+      () => this.client.get(`/blocks/${heightOrHash}`),
+      60000 // 1 min cache - confirmed blocks don't change
+    );
   }
 
-  /**
-   * Get list of blocks
-   */
   async getBlocks(page = 1): Promise<PaginatedResponse<Block>> {
-    return this.client.get('/blocks', {
-      params: { page },
-    });
+    return this.deduplicatedRequest(
+      `blocks?page=${page}`,
+      () => this.client.get('/blocks', { params: { page } }),
+      page === 1 ? 3000 : 30000 // First page: 3s, others: 30s
+    );
+  }
+
+  // Prefetch next page of blocks
+  prefetchBlocks(page: number) {
+    this.prefetch(
+      `blocks?page=${page}`,
+      () => this.client.get('/blocks', { params: { page } }),
+      30000
+    );
   }
 
   // ==================== TRANSACTIONS ====================
 
-  /**
-   * Get transaction by hash
-   */
   async getTransaction(hash: string): Promise<Transaction> {
-    return this.client.get(`/transactions/${hash}`);
+    return this.deduplicatedRequest(
+      `transactions/${hash}`,
+      () => this.client.get(`/transactions/${hash}`),
+      60000 // 1 min cache - confirmed txs don't change
+    );
   }
 
-  /**
-   * Get list of transactions
-   */
   async getTransactions(page = 1): Promise<PaginatedResponse<Transaction>> {
-    return this.client.get('/transactions', {
-      params: { page },
-    });
+    return this.deduplicatedRequest(
+      `transactions?page=${page}`,
+      () => this.client.get('/transactions', { params: { page } }),
+      page === 1 ? 3000 : 30000
+    );
   }
 
-  /**
-   * Get transactions for an address
-   */
+  // Prefetch next page of transactions
+  prefetchTransactions(page: number) {
+    this.prefetch(
+      `transactions?page=${page}`,
+      () => this.client.get('/transactions', { params: { page } }),
+      30000
+    );
+  }
+
   async getAddressTransactions(
     address: string,
     params?: {
@@ -124,37 +225,40 @@ class BlockScoutAPI {
       filter?: 'to' | 'from';
     }
   ): Promise<PaginatedResponse<Transaction>> {
-    return this.client.get(`/addresses/${address}/transactions`, {
-      params,
-    });
+    const key = `addresses/${address}/transactions?${JSON.stringify(params || {})}`;
+    return this.deduplicatedRequest(
+      key,
+      () => this.client.get(`/addresses/${address}/transactions`, { params }),
+      10000
+    );
   }
 
-  /**
-   * Get internal transactions for a transaction
-   */
   async getInternalTransactions(hash: string): Promise<InternalTransaction[]> {
-    return this.client.get(`/transactions/${hash}/internal-transactions`);
+    return this.deduplicatedRequest(
+      `transactions/${hash}/internal`,
+      () => this.client.get(`/transactions/${hash}/internal-transactions`),
+      60000
+    );
   }
 
-  /**
-   * Get logs for a transaction
-   */
   async getTransactionLogs(hash: string): Promise<Log[]> {
-    return this.client.get(`/transactions/${hash}/logs`);
+    return this.deduplicatedRequest(
+      `transactions/${hash}/logs`,
+      () => this.client.get(`/transactions/${hash}/logs`),
+      60000
+    );
   }
 
   // ==================== ADDRESSES ====================
 
-  /**
-   * Get address info
-   */
   async getAddress(address: string): Promise<AddressInfo> {
-    return this.client.get(`/addresses/${address}`);
+    return this.deduplicatedRequest(
+      `addresses/${address}`,
+      () => this.client.get(`/addresses/${address}`),
+      15000 // 15s - balances can change
+    );
   }
 
-  /**
-   * Get address balance (legacy - uses counters endpoint)
-   */
   async getAddressBalance(address: string): Promise<AddressBalance> {
     const addressInfo = await this.getAddress(address);
     return {
@@ -163,16 +267,14 @@ class BlockScoutAPI {
     };
   }
 
-  /**
-   * Get address counters (transactions, token transfers, gas usage)
-   */
   async getAddressCounters(address: string): Promise<any> {
-    return this.client.get(`/addresses/${address}/counters`);
+    return this.deduplicatedRequest(
+      `addresses/${address}/counters`,
+      () => this.client.get(`/addresses/${address}/counters`),
+      30000
+    );
   }
 
-  /**
-   * Get token transfers for an address
-   */
   async getAddressTokenTransfers(
     address: string,
     params?: {
@@ -180,112 +282,121 @@ class BlockScoutAPI {
       type?: string[];
     }
   ): Promise<PaginatedResponse<TokenTransfer>> {
-    return this.client.get(`/addresses/${address}/token-transfers`, {
-      params,
-    });
+    const key = `addresses/${address}/token-transfers?${JSON.stringify(params || {})}`;
+    return this.deduplicatedRequest(
+      key,
+      () => this.client.get(`/addresses/${address}/token-transfers`, { params }),
+      10000
+    );
   }
 
-  /**
-   * Get tokens for an address
-   */
   async getAddressTokens(address: string): Promise<PaginatedResponse<Token>> {
-    return this.client.get(`/addresses/${address}/tokens`);
+    return this.deduplicatedRequest(
+      `addresses/${address}/tokens`,
+      () => this.client.get(`/addresses/${address}/tokens`),
+      30000
+    );
   }
 
   // ==================== TOKENS ====================
 
-  /**
-   * Get token info
-   */
   async getToken(address: string): Promise<Token> {
-    return this.client.get(`/tokens/${address}`);
+    return this.deduplicatedRequest(
+      `tokens/${address}`,
+      () => this.client.get(`/tokens/${address}`),
+      60000
+    );
   }
 
-  /**
-   * Get list of tokens
-   */
   async getTokens(params?: {
     page?: number;
     type?: string;
   }): Promise<PaginatedResponse<Token>> {
-    return this.client.get('/tokens', { params });
+    const key = `tokens?${JSON.stringify(params || {})}`;
+    return this.deduplicatedRequest(
+      key,
+      () => this.client.get('/tokens', { params }),
+      30000
+    );
   }
 
-  /**
-   * Get token transfers
-   */
   async getTokenTransfers(
     address: string,
     params?: { page?: number }
   ): Promise<PaginatedResponse<TokenTransfer>> {
-    return this.client.get(`/tokens/${address}/transfers`, { params });
+    const key = `tokens/${address}/transfers?${JSON.stringify(params || {})}`;
+    return this.deduplicatedRequest(
+      key,
+      () => this.client.get(`/tokens/${address}/transfers`, { params }),
+      10000
+    );
   }
 
-  /**
-   * Get token holders
-   */
   async getTokenHolders(address: string, params?: { page?: number }) {
-    return this.client.get(`/tokens/${address}/holders`, { params });
+    const key = `tokens/${address}/holders?${JSON.stringify(params || {})}`;
+    return this.deduplicatedRequest(
+      key,
+      () => this.client.get(`/tokens/${address}/holders`, { params }),
+      30000
+    );
   }
 
   // ==================== STATS ====================
 
-  /**
-   * Get network stats
-   */
   async getNetworkStats(): Promise<NetworkStats> {
-    return this.client.get('/stats');
+    return this.deduplicatedRequest(
+      'stats',
+      () => this.client.get('/stats'),
+      5000 // 5s - stats update frequently
+    );
   }
 
-  /**
-   * Get transaction stats
-   */
   async getTransactionStats(): Promise<any> {
-    return this.client.get('/stats/charts/transactions');
+    return this.deduplicatedRequest(
+      'stats/charts/transactions',
+      () => this.client.get('/stats/charts/transactions'),
+      60000
+    );
   }
 
-  /**
-   * Get market chart data
-   */
   async getMarketChart(period: 'all' | '1y' | '6m' | '3m' | '1m' = '1m'): Promise<any> {
-    return this.client.get('/stats/charts/market', {
-      params: { period },
-    });
+    return this.deduplicatedRequest(
+      `stats/charts/market?period=${period}`,
+      () => this.client.get('/stats/charts/market', { params: { period } }),
+      300000 // 5 min
+    );
   }
 
   // ==================== SEARCH ====================
 
-  /**
-   * Search by query
-   */
   async search(query: string): Promise<SearchResult> {
+    // Don't cache searches - they should be fresh
     return this.client.get('/search', {
       params: { q: query },
     });
   }
 
-  /**
-   * Quick search (for autocomplete)
-   */
   async quickSearch(query: string): Promise<SearchResult[]> {
-    return this.client.get('/search/quick', {
-      params: { q: query },
-    });
+    // Dedupe rapid typing but don't cache long
+    return this.deduplicatedRequest(
+      `search/quick?q=${query}`,
+      () => this.client.get('/search/quick', { params: { q: query } }),
+      1000 // 1s cache for autocomplete
+    );
   }
 
   // ==================== SMART CONTRACTS ====================
 
-  /**
-   * Get contract info
-   */
   async getContract(address: string): Promise<Contract> {
-    return this.client.get(`/smart-contracts/${address}`);
+    return this.deduplicatedRequest(
+      `smart-contracts/${address}`,
+      () => this.client.get(`/smart-contracts/${address}`),
+      300000 // 5 min - contracts rarely change
+    );
   }
 
-  /**
-   * Read contract method
-   */
   async readContract(address: string, method: string, args: any[] = []): Promise<any> {
+    // Don't cache contract reads - state can change
     return this.client.post(`/smart-contracts/${address}/methods-read`, {
       method,
       args,
@@ -294,34 +405,27 @@ class BlockScoutAPI {
 
   // ==================== GAS ====================
 
-  /**
-   * Get gas prices
-   * Note: Gas prices are included in /stats, not a separate endpoint
-   */
   async getGasPrices(): Promise<any> {
     const stats = await this.getNetworkStats();
     return stats.gas_prices || { slow: 0.01, average: 0.01, fast: 0.01 };
   }
 
-  /**
-   * Get gas price chart data
-   */
   async getGasPriceChart(): Promise<any> {
     try {
-      // Try to get from stats charts endpoint
-      return await this.client.get('/stats/charts/gas-price');
+      return await this.deduplicatedRequest(
+        'stats/charts/gas-price',
+        () => this.client.get('/stats/charts/gas-price'),
+        60000
+      );
     } catch (error) {
       // Fallback: generate from current gas prices
       const stats = await this.getNetworkStats();
       const now = new Date();
       const prices = stats.gas_prices || { slow: 0.01, average: 0.01, fast: 0.01 };
 
-      // Generate 24 hours of data points (every 4 hours)
       return Array.from({ length: 7 }, (_, i) => {
         const date = new Date(now.getTime() - (6 - i) * 4 * 60 * 60 * 1000);
         const timeStr = date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
-
-        // Add some realistic variation
         const variance = () => 1 + (Math.random() * 0.3 - 0.15);
 
         return {
@@ -333,6 +437,26 @@ class BlockScoutAPI {
         };
       });
     }
+  }
+
+  // ==================== UTILITY ====================
+
+  /**
+   * Clear all caches (useful for manual refresh)
+   */
+  clearCache() {
+    this.cache.clear();
+    this.pendingRequests.clear();
+  }
+
+  /**
+   * Get cache stats for debugging
+   */
+  getCacheStats() {
+    return {
+      cacheSize: this.cache.size,
+      pendingRequests: this.pendingRequests.size,
+    };
   }
 }
 
