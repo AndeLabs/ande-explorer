@@ -19,10 +19,8 @@ export const config = {
     host: process.env.NEXT_PUBLIC_API_HOST || 'https://api.ande.network',
     // API base path (e.g., /api/v2)
     basePath: process.env.NEXT_PUBLIC_API_BASE_PATH || '/api/v2',
-    // Full base URL for API calls
-    get baseUrl() {
-      return `${this.host}${this.basePath}`;
-    },
+    // Full base URL for API calls (host + basePath)
+    baseUrl: `${process.env.NEXT_PUBLIC_API_HOST || 'https://api.ande.network'}${process.env.NEXT_PUBLIC_API_BASE_PATH || '/api/v2'}`,
     wsUrl: process.env.NEXT_PUBLIC_WS_URL || 'wss://ws.ande.network',
     rpcUrl: process.env.NEXT_PUBLIC_RPC_URL || 'https://rpc.ande.network',
   },
