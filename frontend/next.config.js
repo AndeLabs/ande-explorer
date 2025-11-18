@@ -58,7 +58,7 @@ const nextConfig = {
     return [
       {
         source: '/api/blockscout/:path*',
-        destination: `${process.env.NEXT_PUBLIC_API_URL}/:path*`,
+        destination: `${process.env.NEXT_PUBLIC_API_HOST}/:path*`,
       },
     ];
   },
