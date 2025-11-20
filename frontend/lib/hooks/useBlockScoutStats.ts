@@ -1,5 +1,8 @@
 /**
- * React Query hook for BlockScout stats with real-time updates
+ * Unified BlockScout Stats Hook with Real-time Updates
+ *
+ * Single hook that provides blockchain statistics with WebSocket support.
+ * WebSockets are enabled by default for instant updates.
  */
 
 import { useQuery, useQueryClient } from '@tanstack/react-query';
@@ -13,8 +16,52 @@ const EXPECTED_BLOCK_TIME = 12;
 const MIN_VALID_BLOCK_TIME = 1;
 const MAX_VALID_BLOCK_TIME = 60;
 
-export function useBlockScoutStats() {
-  return useQuery({
+interface UseBlockScoutStatsOptions {
+  /**
+   * Enable real-time updates via WebSockets
+   * @default true
+   */
+  enableRealtime?: boolean;
+
+  /**
+   * Polling interval in milliseconds (fallback when WebSockets fail)
+   * @default 3000
+   */
+  refetchInterval?: number;
+}
+
+/**
+ * Unified hook for BlockScout statistics
+ *
+ * Features:
+ * - Real-time updates via WebSockets (default)
+ * - Automatic polling fallback (3s)
+ * - Validates and fixes invalid data
+ * - Smooth transitions between updates
+ *
+ * @example
+ * // With real-time updates (default)
+ * const { data, isLoading } = useBlockScoutStats();
+ *
+ * @example
+ * // Polling only (disable WebSockets)
+ * const { data, isLoading } = useBlockScoutStats({ enableRealtime: false });
+ *
+ * @example
+ * // Custom polling interval
+ * const { data, isLoading } = useBlockScoutStats({ refetchInterval: 5000 });
+ */
+export function useBlockScoutStats(options: UseBlockScoutStatsOptions = {}) {
+  const {
+    enableRealtime = true,
+    refetchInterval = 3_000,
+  } = options;
+
+  const queryClient = useQueryClient();
+  const lastBlockRef = useRef<number | null>(null);
+
+  // Base query with polling
+  const query = useQuery({
     queryKey: ['blockscout-stats'],
     queryFn: async () => {
       const data = await getStats();
@@ -37,23 +84,14 @@ export function useBlockScoutStats() {
       return data;
     },
     staleTime: 0, // Always consider data stale for fresh updates
-    gcTime: 3_000, // Keep in cache for 3 seconds
-    refetchInterval: 3_000, // Refresh every 3 seconds (faster updates)
+    gcTime: refetchInterval,
+    refetchInterval,
     refetchIntervalInBackground: false,
     // Keep previous data while fetching for smooth transitions
     placeholderData: (previousData) => previousData,
   });
-}
 
-/**
- * Hook for real-time stats with WebSocket integration
- * Updates immediately when new blocks arrive
- */
-export function useRealtimeBlockScoutStats() {
-  const queryClient = useQueryClient();
-  const lastBlockRef = useRef<number | null>(null);
-
-  // Invalidate stats when new block arrives
+  // WebSocket integration (if enabled)
   const handleNewBlock = useCallback((data: any) => {
     const blockNumber = data?.block?.height || data?.height;
 
@@ -64,19 +102,19 @@ export function useRealtimeBlockScoutStats() {
     }
   }, [queryClient]);
 
-  // Subscribe to WebSocket events
   useEffect(() => {
-    if (!config.features.enableWebSockets) return;
+    if (!enableRealtime || !config.features.enableWebSockets) return;
 
+    // Connect to WebSocket and subscribe to new blocks
     wsClient.connect();
     const unsubscribe = wsClient.subscribe(WS_EVENTS.NEW_BLOCK, handleNewBlock);
 
     return () => {
       unsubscribe();
     };
-  }, [handleNewBlock]);
+  }, [enableRealtime, handleNewBlock]);
 
-  return useBlockScoutStats();
+  return query;
 }
 
 export type { BlockScoutStats };

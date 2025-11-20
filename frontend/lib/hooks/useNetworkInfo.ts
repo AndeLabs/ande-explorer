@@ -5,7 +5,7 @@
  * Provides a unified interface for network information across components.
  */
 
-import { useRealtimeBlockScoutStats } from './useBlockScoutStats';
+import { useBlockScoutStats } from './useBlockScoutStats';
 import { NETWORK_CONFIG, hasPriceData, hasMarketCapData } from '@/lib/config/network';
 
 export interface NetworkInfo {
@@ -44,10 +44,10 @@ export interface NetworkInfo {
 
 /**
  * Hook to access complete network information
- * Combines configuration with real-time blockchain data via WebSockets
+ * Combines configuration with real-time blockchain data via WebSockets (default)
  */
 export function useNetworkInfo(): NetworkInfo {
-  const { data: stats, isLoading, error, isFetching } = useRealtimeBlockScoutStats();
+  const { data: stats, isLoading, error, isFetching } = useBlockScoutStats();
 
   return {
     network: NETWORK_CONFIG,

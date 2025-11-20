@@ -1,6 +1,6 @@
 'use client';
 
-import { useRealtimeBlockScoutStats } from '@/lib/hooks/useBlockScoutStats';
+import { useBlockScoutStats } from '@/lib/hooks/useBlockScoutStats';
 import { StatsCard } from './StatsCard';
 import {
   formatBlockNumber,
@@ -11,7 +11,7 @@ import { LiveIndicator } from '@/components/ui/live-indicator';
 import { Activity, Blocks, Clock, Zap } from 'lucide-react';
 
 export function StatsGrid() {
-  const { data: stats, isLoading, error, isFetching, dataUpdatedAt } = useRealtimeBlockScoutStats();
+  const { data: stats, isLoading, error, isFetching, dataUpdatedAt } = useBlockScoutStats();
 
   // Log errors for debugging
   if (error) {
