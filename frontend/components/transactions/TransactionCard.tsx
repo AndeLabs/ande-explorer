@@ -59,10 +59,10 @@ export function TransactionCard({
             <div className="flex flex-wrap items-center gap-2">
               <span className="text-muted-foreground">From:</span>
               <Link
-                href={`/address/${tx.from}`}
+                href={`/address/${tx.from.hash}`}
                 className="font-mono text-blue-600 hover:underline"
               >
-                {formatAddress(tx.from)}
+                {formatAddress(tx.from.hash)}
               </Link>
             </div>
             <div className="flex items-center gap-2">
@@ -72,10 +72,10 @@ export function TransactionCard({
               <span className="text-muted-foreground">To:</span>
               {tx.to ? (
                 <Link
-                  href={`/address/${tx.to}`}
+                  href={`/address/${tx.to.hash}`}
                   className="font-mono text-blue-600 hover:underline"
                 >
-                  {formatAddress(tx.to)}
+                  {formatAddress(tx.to.hash)}
                 </Link>
               ) : (
                 <span className="italic text-muted-foreground">[Contract Creation]</span>

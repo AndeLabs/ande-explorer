@@ -43,13 +43,27 @@ export interface Block {
   type: string | null;
 }
 
+// Address info in transaction
+export interface TransactionAddress {
+  hash: Address;
+  implementation_name: string | null;
+  is_contract: boolean;
+  is_verified: boolean | null;
+  name: string | null;
+  private_tags: any[];
+  public_tags: any[];
+  watchlist_names: any[];
+  ens_domain_name?: string | null;
+  metadata?: any | null;
+}
+
 // Transaction type
 export interface Transaction {
   hash: Hash;
   block: number | null;
   timestamp: string | null;
-  from: Address;
-  to: Address | null;
+  from: TransactionAddress;
+  to: TransactionAddress | null;
   value: string;
   fee: {
     type: string;
@@ -61,6 +75,7 @@ export interface Transaction {
   max_fee_per_gas: string | null;
   max_priority_fee_per_gas: string | null;
   priority_fee: string | null;
+  base_fee_per_gas?: string | null;
   type: number;
   nonce: number;
   position: number | null;
@@ -124,8 +139,8 @@ export interface AddressCounters {
 // Token transfer type
 export interface TokenTransfer {
   block_hash: Hash;
-  from: Address;
-  to: Address;
+  from: TransactionAddress;
+  to: TransactionAddress;
   log_index: string;
   method: string | null;
   timestamp: string;
