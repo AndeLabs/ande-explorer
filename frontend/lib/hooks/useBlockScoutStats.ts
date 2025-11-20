@@ -37,8 +37,8 @@ export function useBlockScoutStats() {
       return data;
     },
     staleTime: 0, // Always consider data stale for fresh updates
-    gcTime: 5_000, // Keep in cache for 5 seconds
-    refetchInterval: 5_000, // Refresh every 5 seconds
+    gcTime: 3_000, // Keep in cache for 3 seconds
+    refetchInterval: 3_000, // Refresh every 3 seconds (faster updates)
     refetchIntervalInBackground: false,
     // Keep previous data while fetching for smooth transitions
     placeholderData: (previousData) => previousData,
