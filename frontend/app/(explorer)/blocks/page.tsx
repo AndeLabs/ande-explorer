@@ -5,15 +5,21 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useBlocks } from '@/lib/hooks/useBlocks';
 import { api } from '@/lib/api/client';
 import { BlockCard } from '@/components/blocks/BlockCard';
+import { BlocksTable } from '@/components/blocks/BlocksTable';
+import { BlocksStatsSidebar } from '@/components/blocks/BlocksStatsSidebar';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Button } from '@/components/ui/button';
 import { EmptyState } from '@/components/ui/empty-state';
 import { ErrorState } from '@/components/ui/error-state';
 import { Pagination } from '@/components/ui/pagination';
-import { Package, Radio, RefreshCw } from 'lucide-react';
+import { Package, Radio, RefreshCw, LayoutGrid, LayoutList } from 'lucide-react';
 import { config } from '@/lib/config';
+
+type ViewMode = 'cards' | 'table';
 
 export default function BlocksPage() {
   const [page, setPage] = useState(1);
+  const [viewMode, setViewMode] = useState<ViewMode>('table'); // Default to table for better density
   const { data, isLoading, error, refetch, isFetching, dataUpdatedAt } = useBlocks(page);
   const queryClient = useQueryClient();
   const [newBlockHashes, setNewBlockHashes] = useState<Set<string>>(new Set());
@@ -63,12 +69,18 @@ export default function BlocksPage() {
   // Loading state
   if (isLoading) {
     return (
-      <div className="space-y-4">
+      <div className="space-y-6">
         <h1 className="text-3xl font-bold">Blocks</h1>
-        <div className="space-y-4">
-          {[...Array(10)].map((_, i) => (
-            <Skeleton key={i} className="h-48 w-full" />
-          ))}
+        <div className="grid gap-6 lg:grid-cols-[1fr,320px]">
+          <div className="space-y-4">
+            {[...Array(10)].map((_, i) => (
+              <Skeleton key={i} className="h-32 w-full" />
+            ))}
+          </div>
+          <div className="space-y-4">
+            <Skeleton className="h-64 w-full" />
+            <Skeleton className="h-48 w-full" />
+          </div>
         </div>
       </div>
     );
@@ -113,55 +125,99 @@ export default function BlocksPage() {
           </p>
         </div>
 
-        {/* Real-time indicator */}
-        {page === 1 && (
-          <div className="flex items-center gap-3">
-            {/* Live indicator */}
-            <div className="flex items-center gap-2 rounded-full bg-green-100 px-3 py-1.5 dark:bg-green-900/20">
-              <span className="relative flex h-2 w-2">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-75"></span>
-                <span className="relative inline-flex h-2 w-2 rounded-full bg-green-500"></span>
-              </span>
-              <span className="text-xs font-medium text-green-700 dark:text-green-400">
-                Live
-              </span>
-            </div>
-
-            {/* Last update time */}
-            <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-              {isFetching ? (
-                <>
-                  <RefreshCw className="h-3 w-3 animate-spin" />
-                  <span>Updating...</span>
-                </>
-              ) : (
-                <>
-                  <Radio className="h-3 w-3" />
-                  <span>Updated {getTimeSinceUpdate()}</span>
-                </>
-              )}
-            </div>
+        {/* View Mode Toggle + Real-time indicator */}
+        <div className="flex flex-wrap items-center gap-3">
+          {/* View Mode Toggle */}
+          <div className="flex items-center gap-1 rounded-lg border bg-background p-1">
+            <Button
+              variant={viewMode === 'table' ? 'default' : 'ghost'}
+              size="sm"
+              onClick={() => setViewMode('table')}
+              className="h-8 px-3"
+            >
+              <LayoutList className="h-4 w-4 mr-1.5" />
+              Table
+            </Button>
+            <Button
+              variant={viewMode === 'cards' ? 'default' : 'ghost'}
+              size="sm"
+              onClick={() => setViewMode('cards')}
+              className="h-8 px-3"
+            >
+              <LayoutGrid className="h-4 w-4 mr-1.5" />
+              Cards
+            </Button>
           </div>
-        )}
+
+          {/* Live indicator (only on page 1) */}
+          {page === 1 && (
+            <div className="flex items-center gap-3">
+              {/* Live badge */}
+              <div className="flex items-center gap-2 rounded-full bg-green-100 px-3 py-1.5 dark:bg-green-900/20">
+                <span className="relative flex h-2 w-2">
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-75"></span>
+                  <span className="relative inline-flex h-2 w-2 rounded-full bg-green-500"></span>
+                </span>
+                <span className="text-xs font-medium text-green-700 dark:text-green-400">
+                  Live
+                </span>
+              </div>
+
+              {/* Last update time */}
+              <div className="hidden sm:flex items-center gap-1.5 text-xs text-muted-foreground">
+                {isFetching ? (
+                  <>
+                    <RefreshCw className="h-3 w-3 animate-spin" />
+                    <span>Updating...</span>
+                  </>
+                ) : (
+                  <>
+                    <Radio className="h-3 w-3" />
+                    <span>Updated {getTimeSinceUpdate()}</span>
+                  </>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
       </div>
 
-      {/* Blocks List */}
-      <div className="space-y-4">
-        {data.items.map((block, index) => (
-          <div
-            key={block.hash}
-            className={`transition-all duration-500 ${
-              newBlockHashes.has(block.hash)
-                ? 'animate-pulse ring-2 ring-green-500 ring-offset-2 dark:ring-offset-gray-900'
-                : ''
-            }`}
-          >
-            <BlockCard
-              block={block}
-              isNew={page === 1 && newBlockHashes.has(block.hash)}
-            />
+      {/* Main Content: Blocks + Stats Sidebar */}
+      <div className="grid gap-6 lg:grid-cols-[1fr,320px]">
+        {/* Blocks List */}
+        <div className="space-y-4 min-w-0">
+          {viewMode === 'table' ? (
+            <BlocksTable blocks={data.items} newBlockHashes={newBlockHashes} />
+          ) : (
+            data.items.map((block) => (
+              <div
+                key={block.hash}
+                className={`transition-all duration-500 ${
+                  newBlockHashes.has(block.hash)
+                    ? 'animate-pulse ring-2 ring-green-500 ring-offset-2 dark:ring-offset-gray-900'
+                    : ''
+                }`}
+              >
+                <BlockCard
+                  block={block}
+                  isNew={page === 1 && newBlockHashes.has(block.hash)}
+                />
+              </div>
+            ))
+          )}
+        </div>
+
+        {/* Stats Sidebar (Desktop) */}
+        <div className="hidden lg:block">
+          <div className="sticky top-6">
+            <BlocksStatsSidebar recentBlocks={data.items} />
           </div>
-        ))}
+        </div>
+      </div>
+
+      {/* Stats Cards (Mobile - below blocks) */}
+      <div className="lg:hidden">
+        <BlocksStatsSidebar recentBlocks={data.items} />
       </div>
 
       {/* Pagination */}

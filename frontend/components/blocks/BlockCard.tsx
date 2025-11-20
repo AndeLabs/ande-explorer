@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
 import { formatTimeAgo, formatAddress, extractAddress } from '@/lib/utils/format';
 import {
   BlockNumberDisplay,
@@ -8,7 +9,7 @@ import {
 } from '@/components/blockchain-numbers';
 import { config } from '@/lib/config';
 import type { Block } from '@/lib/types';
-import { Package, Clock, Zap } from 'lucide-react';
+import { Package, Clock, Zap, Flame } from 'lucide-react';
 
 interface BlockCardProps {
   block: Block;
@@ -17,6 +18,8 @@ interface BlockCardProps {
 }
 
 export function BlockCard({ block, isNew, className = '' }: BlockCardProps) {
+  const gasPercentage = (parseInt(block.gas_used) / parseInt(block.gas_limit)) * 100;
+
   return (
     <Card className={`p-6 transition-all hover:shadow-lg ${className}`}>
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
@@ -60,14 +63,36 @@ export function BlockCard({ block, isNew, className = '' }: BlockCardProps) {
               <span className="font-medium">{block.tx_count}</span>
             </div>
 
-            {/* Gas Used */}
-            <div className="flex items-start gap-2">
-              <span className="text-muted-foreground">Gas Used:</span>
-              <span className="font-medium">
-                <CountDisplay count={block.gas_used} /> ({
-                  ((parseInt(block.gas_used) / parseInt(block.gas_limit)) * 100).toFixed(2)
-                }%)
-              </span>
+            {/* Gas Used with Progress Bar */}
+            <div className="space-y-2">
+              <div className="flex items-center gap-2">
+                <Flame className="h-4 w-4 text-amber-500" />
+                <span className="text-sm text-muted-foreground">Gas Used:</span>
+              </div>
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between text-sm">
+                  <span className="font-mono font-medium">
+                    <CountDisplay count={block.gas_used} />
+                  </span>
+                  <span className="font-semibold text-muted-foreground">
+                    {gasPercentage.toFixed(1)}%
+                  </span>
+                </div>
+                <Progress
+                  value={gasPercentage}
+                  className="h-2"
+                  indicatorClassName={
+                    gasPercentage > 90
+                      ? 'bg-red-500'
+                      : gasPercentage > 70
+                      ? 'bg-amber-500'
+                      : 'bg-green-500'
+                  }
+                />
+                <div className="text-xs text-muted-foreground">
+                  Limit: <CountDisplay count={block.gas_limit} />
+                </div>
+              </div>
             </div>
 
             {/* Timestamp */}
