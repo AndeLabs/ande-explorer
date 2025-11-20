@@ -10,17 +10,19 @@ interface StatsCardProps {
   icon?: string | ReactNode;
   trend?: string;
   loading?: boolean;
+  updating?: boolean;
   className?: string;
   colorClass?: string;
 }
 
-export function StatsCard({ 
-  title, 
-  value, 
+export function StatsCard({
+  title,
+  value,
   subtitle,
-  icon, 
-  trend, 
-  loading, 
+  icon,
+  trend,
+  loading,
+  updating,
   className,
   colorClass = 'bg-primary/10 text-primary'
 }: StatsCardProps) {
@@ -36,7 +38,8 @@ export function StatsCard({
 
   return (
     <Card className={cn(
-      'p-6 transition-all hover:shadow-lg hover:scale-105 border-neutral-light/20 bg-card/50 backdrop-blur-sm', 
+      'p-6 transition-all hover:shadow-lg hover:scale-105 border-neutral-light/20 bg-card/50 backdrop-blur-sm',
+      updating && 'ring-1 ring-blue-400/50',
       className
     )}>
       <div className="flex items-start justify-between gap-4">
@@ -44,7 +47,10 @@ export function StatsCard({
           <p className="text-sm font-medium text-neutral-dark/70 dark:text-neutral-light/70">
             {title}
           </p>
-          <p className="mt-2 text-2xl sm:text-3xl font-bold text-neutral-dark dark:text-white truncate">
+          <p className={cn(
+            'mt-2 text-2xl sm:text-3xl font-bold text-neutral-dark dark:text-white truncate transition-opacity duration-300',
+            updating && 'opacity-70'
+          )}>
             {value}
           </p>
           {subtitle && (
@@ -64,7 +70,11 @@ export function StatsCard({
           )}
         </div>
         {icon && (
-          <div className={cn('flex h-12 w-12 shrink-0 items-center justify-center rounded-lg', colorClass)}>
+          <div className={cn(
+            'flex h-12 w-12 shrink-0 items-center justify-center rounded-lg transition-transform duration-300',
+            colorClass,
+            updating && 'animate-pulse'
+          )}>
             {typeof icon === 'string' ? (
               <span className="text-2xl">{icon}</span>
             ) : (

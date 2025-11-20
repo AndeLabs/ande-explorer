@@ -11,7 +11,7 @@ type EventCallback = (data: any) => void;
 class WebSocketClient {
   private socket: Socket | null = null;
   private reconnectAttempts = 0;
-  private maxReconnectAttempts = 5;
+  private maxReconnectAttempts = 10;
   private isConnecting = false;
 
   /**
@@ -28,18 +28,22 @@ class WebSocketClient {
       this.socket = io(config.api.wsUrl, {
         // BlockScout uses Phoenix Channels at /socket path
         path: '/socket/websocket',
-        transports: ['websocket'],
+        // Allow fallback to polling if WebSocket fails
+        transports: ['websocket', 'polling'],
         reconnection: true,
         reconnectionDelay: 1000,
-        reconnectionDelayMax: 5000,
+        reconnectionDelayMax: 30000, // Increased max delay
         reconnectionAttempts: this.maxReconnectAttempts,
-        timeout: 20000,
+        timeout: 30000, // Increased timeout for slow networks
         // Performance optimizations
         perMessageDeflate: false, // Phoenix doesn't use this
-        pingInterval: 25000,
-        pingTimeout: 60000,
-        // Force new connection
-        forceNew: true,
+        pingInterval: 30000, // Match backend keepalive
+        pingTimeout: 90000, // Longer timeout for stability
+        // Reuse connection
+        forceNew: false,
+        multiplex: true,
+        rememberUpgrade: true,
+        autoConnect: true,
       });
 
       this.setupEventListeners();

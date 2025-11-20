@@ -1,7 +1,11 @@
 import Link from 'next/link';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { formatTimeAgo, formatNumber, formatAddress, extractAddress } from '@/lib/utils/format';
+import { formatTimeAgo, formatAddress, extractAddress } from '@/lib/utils/format';
+import {
+  BlockNumberDisplay,
+  CountDisplay,
+} from '@/components/blockchain-numbers';
 import { config } from '@/lib/config';
 import type { Block } from '@/lib/types';
 import { Package, Clock, Zap } from 'lucide-react';
@@ -26,7 +30,7 @@ export function BlockCard({ block, isNew, className = '' }: BlockCardProps) {
               prefetch={true}
               className="text-lg font-semibold text-blue-600 hover:underline"
             >
-              Block #{formatNumber(block.height)}
+              Block #<BlockNumberDisplay number={block.height} />
             </Link>
             {isNew && (
               <Badge variant="success" className="ml-2">
@@ -60,7 +64,7 @@ export function BlockCard({ block, isNew, className = '' }: BlockCardProps) {
             <div className="flex items-start gap-2">
               <span className="text-muted-foreground">Gas Used:</span>
               <span className="font-medium">
-                {formatNumber(parseInt(block.gas_used))} ({
+                <CountDisplay count={block.gas_used} /> ({
                   ((parseInt(block.gas_used) / parseInt(block.gas_limit)) * 100).toFixed(2)
                 }%)
               </span>
@@ -87,7 +91,9 @@ export function BlockCard({ block, isNew, className = '' }: BlockCardProps) {
         {/* Right Section - Size */}
         <div className="flex flex-col items-end gap-1 text-right">
           <span className="text-xs text-muted-foreground">Size</span>
-          <span className="text-lg font-semibold">{formatNumber(block.size)} bytes</span>
+          <span className="text-lg font-semibold">
+            <CountDisplay count={block.size} /> bytes
+          </span>
         </div>
       </div>
     </Card>

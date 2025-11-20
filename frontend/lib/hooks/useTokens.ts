@@ -15,14 +15,20 @@ export function useToken(address: string) {
 }
 
 /**
- * Hook to fetch paginated list of tokens
+ * Hook to fetch paginated list of tokens with auto-refresh
  */
 export function useTokens(params?: { page?: number; type?: string }) {
+  const page = params?.page || 1;
+
   return useQuery({
     queryKey: ['tokens', params],
     queryFn: () => api.getTokens(params),
-    keepPreviousData: true,
+    // Keep previous data while fetching new
+    placeholderData: (previousData) => previousData,
     staleTime: config.cache.address,
+    // Auto-refresh only on first page (latest tokens)
+    refetchInterval: page === 1 ? 10_000 : false, // 10 seconds for tokens
+    refetchIntervalInBackground: false,
   });
 }
 

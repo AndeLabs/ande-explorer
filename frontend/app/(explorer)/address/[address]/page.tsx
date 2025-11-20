@@ -22,12 +22,13 @@ import { ContractVerification } from '@/components/contracts/ContractVerificatio
 import { ContractInteraction } from '@/components/contracts/ContractInteraction';
 import { NFTGallery } from '@/components/nft/NFTGallery';
 import { AddressTag } from '@/components/address/AddressTag';
-import {
-  formatWeiToEther,
-  copyToClipboard,
-} from '@/lib/utils/format';
+import { copyToClipboard } from '@/lib/utils/format';
 import { transactionsToCSV, downloadCSV, generateFilename } from '@/lib/utils/export';
 import { ExportButton } from '@/components/ui/export-button';
+import {
+  Balance,
+  CountDisplay,
+} from '@/components/blockchain-numbers';
 import {
   ArrowLeft,
   Copy,
@@ -154,13 +155,16 @@ export default function AddressPage({ params }: { params: { address: string } })
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {balance ? formatWeiToEther(balance.coin_balance) : '0'} ANDE
+              {balance ? (
+                <Balance
+                  wei={balance.coin_balance}
+                  maxDecimals={6}
+                  copyOnClick
+                />
+              ) : (
+                '0 ANDE'
+              )}
             </div>
-            {balance?.exchange_rate && (
-              <div className="mt-1 text-sm text-muted-foreground">
-                ≈ ${(parseFloat(formatWeiToEther(balance.coin_balance)) * parseFloat(balance.exchange_rate)).toFixed(2)}
-              </div>
-            )}
           </CardContent>
         </Card>
 
@@ -192,7 +196,11 @@ export default function AddressPage({ params }: { params: { address: string } })
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {counters?.transactions_count ? parseInt(counters.transactions_count).toLocaleString() : (transactions?.items.length || 0)}
+              {counters?.transactions_count ? (
+                <CountDisplay count={counters.transactions_count} />
+              ) : (
+                transactions?.items.length || 0
+              )}
             </div>
             <div className="mt-1 text-sm text-muted-foreground">
               {counters?.transactions_count ? 'Total transactions' : 'Recent transactions'}
@@ -215,7 +223,7 @@ export default function AddressPage({ params }: { params: { address: string } })
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">
-                  {parseInt(counters.token_transfers_count).toLocaleString()}
+                  <CountDisplay count={counters.token_transfers_count} />
                 </div>
                 <div className="mt-1 text-sm text-muted-foreground">
                   Total token transfers
@@ -235,7 +243,7 @@ export default function AddressPage({ params }: { params: { address: string } })
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">
-                  {parseInt(counters.gas_usage_count).toLocaleString()}
+                  <CountDisplay count={counters.gas_usage_count} />
                 </div>
                 <div className="mt-1 text-sm text-muted-foreground">
                   Total gas used
@@ -255,7 +263,7 @@ export default function AddressPage({ params }: { params: { address: string } })
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">
-                  {parseInt(counters.validations_count).toLocaleString()}
+                  <CountDisplay count={counters.validations_count} />
                 </div>
                 <div className="mt-1 text-sm text-muted-foreground">
                   Blocks validated

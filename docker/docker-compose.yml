@@ -106,9 +106,43 @@ services:
       # API Configuration
       API_RATE_LIMIT_BY_KEY: "${API_RATE_LIMIT_BY_KEY:-50}"
       API_RATE_LIMIT_BY_IP: "${API_RATE_LIMIT_BY_IP:-100}"
-      
+
+      # ====== REAL-TIME CONFIGURATION - CRITICAL ======
+      # Cache Configuration (seconds)
+      CACHE_PERIOD: 3
+      STATS_COUNTER_CACHE_PERIOD: 3
+      CACHE_TOTAL_GAS_USAGE_PERIOD: 3
+      CACHE_ADDRESS_SUM_PERIOD: 3
+      CACHE_ADDRESS_TRANSACTIONS_COUNTER_PERIOD: 3
+      CACHE_ADDRESS_TOKENS_USD_SUM_PERIOD: 3
+      CACHE_ADDRESS_TOKEN_TRANSFERS_COUNTER_PERIOD: 3
+      CACHE_BLOCK_COUNT_PERIOD: 3
+      CACHE_TRANSACTION_COUNT_PERIOD: 3
+      CACHE_ADDRESS_COUNT_PERIOD: 3
+
+      # Processing Intervals (milliseconds)
+      QUEUE_INTERVAL: 1000
+      BLOCK_INTERVAL: 1000
+      POOL_SIZE: 25
+
+      # Real-time Events
+      REALTIME_EVENTS_ENABLED: "true"
+      EVENTS_ENABLED: "true"
+
+      # WebSocket Configuration
+      WEBSOCKET_ENABLED: "true"
+      WEBSOCKET_KEEPALIVE_INTERVAL: 30000
+
+      # Block Time Configuration
+      AVERAGE_BLOCK_TIME: 12
+      BLOCK_TIME_WINDOW: 100
+
+      # Sanity Checks
+      SANITY_CHECK_INTERVAL: 5000
+      SANITY_PARAMS_ENABLED: "true"
+
       # Other Settings
-      COIN: ETH
+      COIN: ANDE
       DISABLE_EXCHANGE_RATES: "false"
     volumes:
       - blockscout-main-logs:/app/logs

@@ -20,8 +20,12 @@ async function fetchAPI<T>(endpoint: string, options?: RequestInit): Promise<T> 
   try {
     const response = await fetch(url, {
       ...options,
+      // Prevent all caching for real-time data
+      cache: 'no-store',
       headers: {
         'Content-Type': 'application/json',
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
+        'Pragma': 'no-cache',
         ...options?.headers,
       },
     });

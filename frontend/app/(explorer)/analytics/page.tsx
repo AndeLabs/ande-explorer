@@ -4,6 +4,7 @@ import { TransactionChart } from '@/components/charts/TransactionChart';
 import { GasChart } from '@/components/charts/GasChart';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useNetworkStats } from '@/lib/hooks/useNetworkStats';
+import { LiveIndicator } from '@/components/ui/live-indicator';
 import { formatNumber, formatWeiToGwei } from '@/lib/utils/format';
 import {
   BarChart3,
@@ -13,18 +14,26 @@ import {
   Users,
   Package,
 } from 'lucide-react';
+import { config } from '@/lib/config';
 
 export default function AnalyticsPage() {
-  const { data: stats } = useNetworkStats();
+  const { data: stats, isFetching, dataUpdatedAt } = useNetworkStats();
 
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div>
-        <h1 className="text-3xl font-bold">Network Analytics</h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Real-time statistics and charts for {process.env.NEXT_PUBLIC_CHAIN_NAME}
-        </p>
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+        <div>
+          <h1 className="text-3xl font-bold">Network Analytics</h1>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Real-time statistics and charts for {config.chain.name}
+          </p>
+        </div>
+        <LiveIndicator
+          isFetching={isFetching}
+          dataUpdatedAt={dataUpdatedAt}
+          label="Analytics"
+        />
       </div>
 
       {/* Key Metrics */}

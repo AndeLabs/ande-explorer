@@ -3,10 +3,14 @@ import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import {
   formatTimeAgo,
-  formatWeiToEther,
   formatAddress,
   formatHash,
 } from '@/lib/utils/format';
+import {
+  Balance,
+  BlockNumberDisplay,
+  CountDisplay,
+} from '@/components/blockchain-numbers';
 import type { Transaction } from '@/lib/types';
 import { ArrowRight, Clock, Coins } from 'lucide-react';
 
@@ -85,7 +89,7 @@ export function TransactionCard({
               <div className="flex items-center gap-1">
                 <span>Block:</span>
                 <Link href={`/blocks/${tx.block}`} className="text-blue-600 hover:underline">
-                  {tx.block.toLocaleString()}
+                  <BlockNumberDisplay number={tx.block} />
                 </Link>
               </div>
               {tx.timestamp && (
@@ -104,21 +108,21 @@ export function TransactionCard({
           <div className="flex items-center gap-1">
             <Coins className="h-4 w-4 text-muted-foreground" />
             <span className="text-lg font-semibold">
-              {formatWeiToEther(tx.value)} ANDE
+              <Balance wei={tx.value} maxDecimals={6} copyOnClick />
             </span>
           </div>
 
           {/* Fee */}
           {tx.fee && (
             <div className="text-xs text-muted-foreground">
-              Fee: {formatWeiToEther(tx.fee.value)} ANDE
+              Fee: <Balance wei={tx.fee.value} maxDecimals={6} />
             </div>
           )}
 
           {/* Gas */}
           {tx.gas_used && (
             <div className="text-xs text-muted-foreground">
-              Gas: {parseInt(tx.gas_used).toLocaleString()}
+              Gas: <CountDisplay count={tx.gas_used} />
             </div>
           )}
         </div>

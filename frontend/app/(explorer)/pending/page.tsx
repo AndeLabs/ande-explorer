@@ -1,19 +1,19 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { api } from '@/lib/api/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ErrorState } from '@/components/ui/error-state';
 import { EmptyState } from '@/components/ui/empty-state';
 import { TransactionCard } from '@/components/transactions/TransactionCard';
+import { LiveIndicator, AnimatedListItem } from '@/components/ui/live-indicator';
 import { Clock, Activity, Zap } from 'lucide-react';
 import { config } from '@/lib/config';
 
 export default function PendingTransactionsPage() {
-  const { data, isLoading, error, refetch } = useQuery({
+  const { data, isLoading, error, refetch, isFetching, dataUpdatedAt } = useQuery({
     queryKey: ['transactions', 'pending'],
     queryFn: async () => {
       // BlockScout API v2 endpoint for pending transactions
@@ -25,10 +25,33 @@ export default function PendingTransactionsPage() {
     },
     refetchInterval: 3_000, // Refetch every 3 seconds for mempool updates
     staleTime: 1_000,
+    placeholderData: (previousData) => previousData,
   });
+
+  // Track new pending transactions for animation
+  const [newTxHashes, setNewTxHashes] = useState<Set<string>>(new Set());
+  const prevTxRef = useRef<string[]>([]);
 
   // Filter only pending transactions
   const pendingTxs = data?.items?.filter(tx => tx.status === 'pending') || [];
+
+  // Detect new transactions
+  useEffect(() => {
+    if (pendingTxs.length > 0) {
+      const currentHashes = pendingTxs.map(tx => tx.hash);
+      const prevHashes = prevTxRef.current;
+
+      if (prevHashes.length > 0) {
+        const newHashes = currentHashes.filter(hash => !prevHashes.includes(hash));
+        if (newHashes.length > 0) {
+          setNewTxHashes(new Set(newHashes));
+          setTimeout(() => setNewTxHashes(new Set()), 2000);
+        }
+      }
+
+      prevTxRef.current = currentHashes;
+    }
+  }, [pendingTxs]);
 
   if (isLoading) {
     return (
@@ -52,11 +75,18 @@ export default function PendingTransactionsPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div>
-        <h1 className="text-3xl font-bold">Pending Transactions</h1>
-        <p className="mt-2 text-muted-foreground">
-          Transactions waiting to be included in the next block
-        </p>
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+        <div>
+          <h1 className="text-3xl font-bold">Pending Transactions</h1>
+          <p className="mt-2 text-muted-foreground">
+            Transactions waiting to be included in the next block
+          </p>
+        </div>
+        <LiveIndicator
+          isFetching={isFetching}
+          dataUpdatedAt={dataUpdatedAt}
+          label="Mempool"
+        />
       </div>
 
       {/* Stats Cards */}
@@ -112,10 +142,9 @@ export default function PendingTransactionsPage() {
         <CardHeader>
           <div className="flex items-center justify-between">
             <CardTitle>Pending Transactions</CardTitle>
-            <Badge variant="secondary" className="animate-pulse">
-              <Activity className="mr-1 h-3 w-3" />
-              Live
-            </Badge>
+            <span className="text-sm text-muted-foreground">
+              {pendingTxs.length} in queue
+            </span>
           </div>
           <p className="text-sm text-muted-foreground">
             These transactions are waiting to be confirmed in the next block
@@ -125,7 +154,14 @@ export default function PendingTransactionsPage() {
           {pendingTxs.length > 0 ? (
             <div className="space-y-4">
               {pendingTxs.map((tx) => (
-                <TransactionCard key={tx.hash} tx={tx} showBlock={false} />
+                <AnimatedListItem
+                  key={tx.hash}
+                  itemKey={tx.hash}
+                  newItems={newTxHashes}
+                  ringColor="orange"
+                >
+                  <TransactionCard tx={tx} showBlock={false} />
+                </AnimatedListItem>
               ))}
             </div>
           ) : (
