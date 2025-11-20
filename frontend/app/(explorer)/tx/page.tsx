@@ -1,20 +1,29 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { useTransactions } from '@/lib/hooks/useTransactions';
+import { api } from '@/lib/api/client';
 import { TransactionCard } from '@/components/transactions/TransactionCard';
+import { TransactionsTable } from '@/components/transactions/TransactionsTable';
+import { TransactionsStatsSidebar } from '@/components/transactions/TransactionsStatsSidebar';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Button } from '@/components/ui/button';
 import { EmptyState } from '@/components/ui/empty-state';
 import { ErrorState } from '@/components/ui/error-state';
 import { Pagination } from '@/components/ui/pagination';
 import { ExportButton } from '@/components/ui/export-button';
 import { transactionsToCSV, downloadCSV, generateFilename } from '@/lib/utils/export';
-import { ArrowRightLeft, Radio, RefreshCw } from 'lucide-react';
+import { ArrowRightLeft, Radio, RefreshCw, LayoutGrid, LayoutList } from 'lucide-react';
 import { config } from '@/lib/config';
+
+type ViewMode = 'cards' | 'table';
 
 export default function TransactionsPage() {
   const [page, setPage] = useState(1);
+  const [viewMode, setViewMode] = useState<ViewMode>('table'); // Default to table for better density
   const { data, isLoading, error, refetch, isFetching, dataUpdatedAt } = useTransactions(page);
+  const queryClient = useQueryClient();
   const [newTxHashes, setNewTxHashes] = useState<Set<string>>(new Set());
   const prevTxRef = useRef<string[]>([]);
 
@@ -36,6 +45,17 @@ export default function TransactionsPage() {
     }
   }, [data, page]);
 
+  // PREFETCH: Pre-cargar la siguiente página para navegación instantánea
+  useEffect(() => {
+    if (data?.next_page_params) {
+      queryClient.prefetchQuery({
+        queryKey: ['transactions', page + 1],
+        queryFn: () => api.getTransactions(page + 1),
+        staleTime: 60_000, // 1 minuto
+      });
+    }
+  }, [page, data, queryClient]);
+
   // Format time since last update
   const getTimeSinceUpdate = () => {
     if (!dataUpdatedAt) return '';
@@ -48,12 +68,18 @@ export default function TransactionsPage() {
   // Loading state
   if (isLoading) {
     return (
-      <div className="space-y-4">
+      <div className="space-y-6">
         <h1 className="text-3xl font-bold">Transactions</h1>
-        <div className="space-y-4">
-          {[...Array(10)].map((_, i) => (
-            <Skeleton key={i} className="h-56 w-full" />
-          ))}
+        <div className="grid gap-6 lg:grid-cols-[1fr,320px]">
+          <div className="space-y-4">
+            {[...Array(10)].map((_, i) => (
+              <Skeleton key={i} className="h-32 w-full" />
+            ))}
+          </div>
+          <div className="space-y-4">
+            <Skeleton className="h-64 w-full" />
+            <Skeleton className="h-48 w-full" />
+          </div>
         </div>
       </div>
     );
@@ -98,11 +124,34 @@ export default function TransactionsPage() {
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
-          {/* Real-time indicator */}
+        {/* View Mode Toggle + Real-time indicator + Export */}
+        <div className="flex flex-wrap items-center gap-3">
+          {/* View Mode Toggle */}
+          <div className="flex items-center gap-1 rounded-lg border bg-background p-1">
+            <Button
+              variant={viewMode === 'table' ? 'default' : 'ghost'}
+              size="sm"
+              onClick={() => setViewMode('table')}
+              className="h-8 px-3"
+            >
+              <LayoutList className="h-4 w-4 mr-1.5" />
+              Table
+            </Button>
+            <Button
+              variant={viewMode === 'cards' ? 'default' : 'ghost'}
+              size="sm"
+              onClick={() => setViewMode('cards')}
+              className="h-8 px-3"
+            >
+              <LayoutGrid className="h-4 w-4 mr-1.5" />
+              Cards
+            </Button>
+          </div>
+
+          {/* Live indicator (only on page 1) */}
           {page === 1 && (
-            <>
-              {/* Live indicator */}
+            <div className="flex items-center gap-3">
+              {/* Live badge */}
               <div className="flex items-center gap-2 rounded-full bg-green-100 px-3 py-1.5 dark:bg-green-900/20">
                 <span className="relative flex h-2 w-2">
                   <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-75"></span>
@@ -114,7 +163,7 @@ export default function TransactionsPage() {
               </div>
 
               {/* Last update time */}
-              <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+              <div className="hidden sm:flex items-center gap-1.5 text-xs text-muted-foreground">
                 {isFetching ? (
                   <>
                     <RefreshCw className="h-3 w-3 animate-spin" />
@@ -127,9 +176,10 @@ export default function TransactionsPage() {
                   </>
                 )}
               </div>
-            </>
+            </div>
           )}
 
+          {/* Export Button */}
           <ExportButton
             onExport={() => {
               const csv = transactionsToCSV(data.items);
@@ -141,20 +191,43 @@ export default function TransactionsPage() {
         </div>
       </div>
 
-      {/* Transactions List */}
-      <div className="space-y-4">
-        {data.items.map((tx) => (
-          <div
-            key={tx.hash}
-            className={`transition-all duration-500 ${
-              newTxHashes.has(tx.hash)
-                ? 'animate-pulse ring-2 ring-blue-500 ring-offset-2 dark:ring-offset-gray-900'
-                : ''
-            }`}
-          >
-            <TransactionCard tx={tx} showBlock />
+      {/* Main Content: Transactions + Stats Sidebar */}
+      <div className="grid gap-6 lg:grid-cols-[1fr,320px]">
+        {/* Transactions List */}
+        <div className="space-y-4 min-w-0">
+          {viewMode === 'table' ? (
+            <TransactionsTable transactions={data.items} newTxHashes={newTxHashes} />
+          ) : (
+            data.items.map((tx) => (
+              <div
+                key={tx.hash}
+                className={`transition-all duration-500 ${
+                  newTxHashes.has(tx.hash)
+                    ? 'animate-pulse ring-2 ring-green-500 ring-offset-2 dark:ring-offset-gray-900'
+                    : ''
+                }`}
+              >
+                <TransactionCard
+                  tx={tx}
+                  showBlock
+                  isNew={page === 1 && newTxHashes.has(tx.hash)}
+                />
+              </div>
+            ))
+          )}
+        </div>
+
+        {/* Stats Sidebar (Desktop) */}
+        <div className="hidden lg:block">
+          <div className="sticky top-6">
+            <TransactionsStatsSidebar recentTransactions={data.items} />
           </div>
-        ))}
+        </div>
+      </div>
+
+      {/* Stats Cards (Mobile - below transactions) */}
+      <div className="lg:hidden">
+        <TransactionsStatsSidebar recentTransactions={data.items} />
       </div>
 
       {/* Pagination */}
