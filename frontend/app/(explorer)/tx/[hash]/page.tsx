@@ -221,10 +221,10 @@ export default function TransactionDetailsPage({ params }: { params: { hash: str
                 <div>
                   <div className="mb-2 text-sm text-muted-foreground">From:</div>
                   <Link
-                    href={`/address/${tx.from}`}
+                    href={`/address/${tx.from.hash}`}
                     className="block break-all rounded bg-muted p-3 font-mono text-sm text-blue-600 hover:underline"
                   >
-                    {tx.from}
+                    {tx.from.hash}
                   </Link>
                 </div>
 
@@ -233,10 +233,10 @@ export default function TransactionDetailsPage({ params }: { params: { hash: str
                   <div className="mb-2 text-sm text-muted-foreground">To:</div>
                   {tx.to ? (
                     <Link
-                      href={`/address/${tx.to}`}
+                      href={`/address/${tx.to.hash}`}
                       className="block break-all rounded bg-muted p-3 font-mono text-sm text-blue-600 hover:underline"
                     >
-                      {tx.to}
+                      {tx.to.hash}
                     </Link>
                   ) : (
                     <div className="rounded bg-muted p-3 text-sm italic text-muted-foreground">
