@@ -9,8 +9,8 @@
 
 import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
-import { formatTimeAgo, formatAddress, extractAddress, formatEther } from '@/lib/utils/format';
-import { CountDisplay } from '@/components/blockchain-numbers';
+import { formatTimeAgo, formatAddress, extractAddress } from '@/lib/utils/format';
+import { CountDisplay, Balance } from '@/components/blockchain-numbers';
 import type { Transaction } from '@/lib/types';
 import { ArrowRight, CheckCircle2, XCircle, Clock } from 'lucide-react';
 
@@ -113,7 +113,7 @@ export function TransactionsTable({ transactions, newTxHashes = new Set() }: Tra
                 {/* Value */}
                 <td className="p-3 text-right">
                   <span className="font-mono text-xs font-semibold">
-                    {formatEther(tx.value)} ANDE
+                    <Balance wei={tx.value} maxDecimals={4} />
                   </span>
                 </td>
 

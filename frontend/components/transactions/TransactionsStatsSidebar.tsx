@@ -12,7 +12,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { useBlockScoutStats } from '@/lib/hooks/useBlockScoutStats';
 import { formatCount } from '@/lib/utils/blockchain-numbers';
-import { formatEther } from '@/lib/utils/format';
+import { formatWeiToEther } from '@/lib/utils/format';
 import {
   Activity,
   Zap,
@@ -159,7 +159,7 @@ export function TransactionsStatsSidebar({ recentTransactions = [] }: Transactio
                 Avg Value
               </span>
               <span className="font-mono font-semibold">
-                {formatEther(avgTxValue)} ANDE
+                {formatWeiToEther(avgTxValue)} ANDE
               </span>
             </div>
           )}
