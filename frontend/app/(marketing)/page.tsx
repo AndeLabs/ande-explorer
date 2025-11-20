@@ -1,6 +1,8 @@
 import { Hero } from '@/components/marketing/Hero';
 import { StatsGrid } from '@/components/stats/StatsGrid';
 import { RealtimeFeed } from '@/components/realtime/RealtimeFeed';
+import { NetworkInfoWidget } from '@/components/network/NetworkInfoWidget';
+import { NetworkLinksCard } from '@/components/network/NetworkLinksCard';
 import Link from 'next/link';
 import { ArrowRight, Zap, Shield, BarChart3, Code, Coins, Image } from 'lucide-react';
 import { Card } from '@/components/ui/card';
@@ -11,6 +13,20 @@ export default function HomePage() {
       <Hero />
 
       <StatsGrid />
+
+      {/* Network Info Section */}
+      <section className="py-12">
+        <div className="container-custom">
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+            <div className="lg:col-span-2">
+              <NetworkInfoWidget />
+            </div>
+            <div>
+              <NetworkLinksCard />
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* Real-time Feed */}
       <RealtimeFeed />
